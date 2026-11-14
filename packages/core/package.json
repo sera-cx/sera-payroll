@@ -1,0 +1,25 @@
+{
+  "name": "@sera-payroll/core",
+  "version": "0.1.0",
+  "description": "Pay run engine, state machines, interfaces and payslip commitments for Sera.cx Payroll. Pure TypeScript, no I/O.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "decimal.js": "^10.4.3",
+    "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
