@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<!--
+  Sera.cx Payroll: working prototype plus build notes, in one file.
+  For Claude Code: read the section with id="build-notes" first. It holds every
+  decision, the rules, the data model, the interfaces and the build order.
+  The script at the bottom is the reference behaviour. Everything is simulated
+  and held in memory. Open this file in a browser and use the "Build notes"
+  button to read the notes rendered.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sera.cx Payroll prototype and build notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Chivo+Mono:wght@500;700;800&display=swap">
+<style>
+:root{--g:#00D26A;--tint:#E9FBF1;--soft:#F4FBF7;--line:#D7E5DC;--ink:#0B0F0C;--mute:#4A5A50;--deep:#00703A;--warn:#8A3B00;--warnbg:#FFF1E0}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:#fff;font-size:15px;line-height:1.4}
+.mono{font-family:'Chivo Mono',ui-monospace,monospace}
+button,select,input,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
+button{cursor:pointer}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.brand small{display:block;font-weight:500;font-size:12px;color:var(--mute)}
+.dot{width:30px;height:30px;border-radius:9px;background:var(--g);flex:none}
+.seg{display:flex;border:1px solid var(--ink);border-radius:12px;overflow:hidden}
+.seg button{min-height:44px;padding:0 14px;border:0;background:#fff;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--g);font-weight:800}
+.pill{padding:6px 12px;border:1px solid var(--ink);border-radius:999px;font-size:12px;font-weight:600}
+.note{background:var(--g);color:var(--ink);font-size:13px;font-weight:500;padding:10px 20px;border-bottom:2px solid var(--ink)}
+.note strong{font-weight:800;margin-right:8px}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 80px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.tabs button{min-height:44px;padding:0 14px;border:0;border-radius:10px;background:#fff;color:var(--mute);font-weight:600}
+.tabs button[aria-pressed=true]{background:var(--tint);color:var(--ink)}
+h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.02em}
+h2{margin:0 0 10px;font-size:16px;font-weight:800}
+.sub{margin:6px 0 0;color:var(--mute)}
+.chip{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--tint);color:var(--deep);font-size:12px;font-weight:700}
+.chip.paid{background:var(--g);color:var(--ink)}
+.chip.warn{background:var(--warnbg);color:var(--warn)}
+.chip.plain{background:#fff;border:1px solid var(--line);color:var(--mute)}
+.cols{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;margin-top:22px}
+.main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:26px}
+.side{flex:1 1 300px;min-width:0;background:var(--tint);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.side .ghost{position:absolute;right:-16px;top:-64px;font-size:260px;font-weight:800;line-height:1;color:#D2F5E2}
+.side>*{position:relative}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{min-height:52px;padding:6px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:600;text-align:left}
+.opt small{display:block;font-size:12px;font-weight:500;color:var(--mute)}
+.opt[aria-pressed=true]{border:2px solid var(--ink);background:var(--g);font-weight:800}
+.opt[aria-pressed=true] small{color:var(--ink)}
+.opt:disabled{opacity:.45;cursor:not-allowed}
+.card{border:1px solid var(--line);border-radius:14px}
+.pad{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.row{padding:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.row:first-child{border-top:0}
+.rowtop{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;align-items:baseline}
+.name{font-weight:700}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}
+.step{padding:4px 9px;border-radius:8px;background:var(--soft);border:1px solid var(--line);font-weight:600}
+.step.sera,.step.done{background:var(--g);border-color:var(--ink);font-weight:800}
+.step.now{border:2px solid var(--ink);background:#fff;font-weight:800}
+.step.todo{color:var(--mute)}
+.arrow{color:var(--mute)}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.kv span:first-child{color:var(--mute)}
+.kv span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.big{font-weight:800;font-size:34px;letter-spacing:-.03em;line-height:1.1;overflow-wrap:anywhere}
+.cta{min-height:52px;border:2px solid var(--ink);border-radius:12px;background:var(--g);font-weight:800;font-size:16px;padding:0 16px}
+.cta:disabled{background:#fff;color:var(--mute);border-color:var(--line);cursor:not-allowed}
+.ghostbtn{min-height:44px;border:1px solid var(--ink);border-radius:12px;background:#fff;font-weight:600;padding:0 14px}
+.fine{font-size:12px;color:var(--mute);margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--mute)}
+input[type=text],input[type=number],select,textarea{min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+textarea{padding:10px 12px;min-height:120px;font-family:'Chivo Mono',ui-monospace,monospace;font-size:12px}
+input[type=range]{width:100%;accent-color:#00703A;min-height:44px}
+.tog{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;font-weight:600;color:var(--ink);flex-direction:row}
+.tog input{width:20px;height:20px;accent-color:#00703A;flex:none}
+.phone{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.phone .side{flex:none}
+.err{color:var(--warn);font-size:13px;font-weight:600}
+.wal{background:var(--soft);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.addr{font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.ov{position:fixed;inset:0;background:rgba(233,251,241,.94);display:flex;align-items:center;justify-content:center;padding:20px;z-index:5;overflow:auto}
+.dlg{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:22px;max-width:440px;width:100%;display:flex;flex-direction:column;gap:12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px 16px;font-weight:600;font-size:14px;z-index:6;max-width:90%}
+.code{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+summary{cursor:pointer;min-height:32px;font-weight:600}
+.notes{max-width:860px;margin:0 auto;line-height:1.55}
+.notes h2{margin:30px 0 10px;font-size:19px}
+.notes ul,.notes ol{padding-left:22px;margin:8px 0}
+.notes li{margin:6px 0}
+.notes code{font-family:'Chivo Mono',ui-monospace,monospace;font-size:13px;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.notes table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0;display:block;overflow-x:auto}
+.notes th,.notes td{text-align:left;vertical-align:top;padding:9px 10px;border-top:1px solid var(--line)}
+.notes th{background:var(--soft);font-size:12px;color:var(--mute)}
+.notes pre.code code{background:none;border:0;padding:0}
+.seg{flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand"><div class="dot" aria-hidden="true"></div><span>[YOUR PAYROLL BRAND]<small id="clientName"></small></span></div>
+  <div class="seg" role="group" aria-label="View as">
+    <button type="button" id="vEmployer" onclick="setView('employer')">Employer</button>
+    <button type="button" id="vEmployee" onclick="setView('employee')">Employee</button>
+    <button type="button" id="vOperator" onclick="setView('operator')">Operator</button>
+    <button type="button" id="vNotes" onclick="setView('notes')">Build notes</button>
+  </div>
+  <span class="pill">Settlement by Sera.cx</span>
+</div>
+<div class="note"><strong>DEMO SITE</strong> Sample data and a simulated wallet. Nothing is signed, sent or emailed for real. Open source: fork it and add your own database, emails and ramp partners. <span class="mono">[REPO LINK]</span> <button type="button" class="ghostbtn" onclick="resetDemo()" style="min-height:32px;margin-left:8px;font-size:13px">Reset demo</button></div>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<section id="build-notes" hidden>
+<h1>Build notes for Claude Code</h1>
+<p class="sub">Everything decided so far, what this file simulates, and what the real build must do. Read this whole section before writing code. The working prototype in this same file is the reference for behaviour and layout.</p>
+
+<h2>1. What we are building</h2>
+<ul>
+<li>An open-source stablecoin payroll platform, built by Sera.cx and released for others to fork, in the same way as the Sera.cx open-source payment gateway.</li>
+<li>Employers fund a pay run in any supported stablecoin or in fiat. Each employee chooses what they receive: any supported stablecoin to their wallet, or fiat to their bank. The two choices are independent.</li>
+<li>Sera.cx is the stablecoin-to-stablecoin swap in the middle. On-ramp and off-ramp partners handle fiat in and fiat out.</li>
+<li>Sera.cx does not run payroll for anyone. Payroll companies and other operators fork this and run it under their own brand and licence.</li>
+<li>The differentiator is non-USD stablecoins (MYRT, XSGD, IDRT, JPYC and others). Existing stablecoin payroll products pay out in USDT or USDC. Here an employee in Malaysia can receive MYRT, or ringgit by DuitNow, while the employer funds in USDT.</li>
+<li>First deliverable is a public demo site that developers can try, clearly labelled as a demo, plus the repo they fork.</li>
+</ul>
+
+<h2>2. Who uses it</h2>
+<ul>
+<li><strong>Payroll and EOR companies (operators):</strong> the main audience. They fork it and add it as a payout rail for their existing clients.</li>
+<li><strong>Crypto-native companies:</strong> treasury already in stablecoins, often a multisig. May self-host.</li>
+<li><strong>Remote-first companies with overseas contractors</strong>, agencies, outsourcers and gig platforms: many small cross-border payouts.</li>
+<li><strong>Businesses that earn in stablecoins</strong> and want to pay people without converting to fiat first.</li>
+<li>Not the target: a local business paying local staff in local currency by bank transfer.</li>
+</ul>
+
+<h2>3. Roles and views</h2>
+<table>
+<tr><th>Role</th><th>What they do</th></tr>
+<tr><td>Operator admin</td><td>Manages employer clients and each client's fee, connects ramp partners per currency, turns statutory plug-ins on, holds API keys and webhooks.</td></tr>
+<tr><td>Preparer (employer)</td><td>Maintains the roster, imports pay files, builds the pay run, submits it for approval.</td></tr>
+<tr><td>Approver (employer)</td><td>Reviews, signs with the treasury wallet and sends. Cannot approve a run they prepared when two-person approval is on.</td></tr>
+<tr><td>Employee or contractor</td><td>Chooses payout currency and split, adds or signs a wallet address, verifies with the off-ramp partner for bank payouts, reads payslips.</td></tr>
+</table>
+
+<h2>4. Decisions already made</h2>
+<ul>
+<li><strong>Wallet address, either route is valid:</strong> the employer can enter an employee's address, or the employee can sign with their own wallet. Neither is required over the other. An employer-entered address is good for payout without employee confirmation.</li>
+<li><strong>Lock:</strong> the employer can lock an address. While locked, nobody can change it until an employer admin unlocks it.</li>
+<li><strong>Hold on changes:</strong> an employee changing an existing address starts a 48 hour hold. The employer can approve it early or reject it. The employee can cancel it. A first-time address has no hold. The hold length should be configurable by the operator.</li>
+<li><strong>Snapshot at signing:</strong> addresses and rates freeze for a run when it is signed. Later edits apply to the next run.</li>
+<li><strong>Database and email are allowed.</strong> An earlier idea of no database was dropped. Forks add their own database and email provider.</li>
+<li><strong>Non-custodial:</strong> funds go from the employer's wallet, through the swap, to the employee or the off-ramp partner. The operator and Sera.cx never hold funds or keys.</li>
+<li><strong>Bank details never touch this app.</strong> For fiat payouts the employee is verified by the off-ramp partner, who holds their bank details. The app stores only the partner's reference or deposit address for that employee.</li>
+<li><strong>Screening:</strong> every address is screened when added and again before each payout. A flagged address holds that one payout. The rest of the run goes ahead.</li>
+<li><strong>"People" means employees and contractors.</strong> The tab is called Employees.</li>
+<li><strong>Demo labelling:</strong> the public demo carries a permanent banner saying it is a demo, that nothing is real, and that the code is open source.</li>
+<li><strong>Public demo runs on a testnet</strong> with test stablecoins and a real wallet connection, so developers see a real signature and transaction while no real salary moves.</li>
+</ul>
+
+<h2>5. What this file simulates and what the real build must do</h2>
+<table>
+<tr><th>Area</th><th>In this prototype</th><th>Real build</th></tr>
+<tr><td>Wallet connect and signing</td><td>Buttons only. No wallet opens. Addresses from "sign" are random.</td><td>Connect a real wallet. Employee proves an address by signing a message that the server verifies. Approver signs and sends the run from the treasury wallet. Support multisig treasuries.</td></tr>
+<tr><td>Swap on Sera.cx</td><td>Fixed sample rates in <code>RATE</code>. No call is made.</td><td>Integrate with Sera.cx for rates and settlement. Sera.cx is non-custodial and settles with signed EIP-712 intents. Use the published docs (docs.sera.cx) and the Sera.cx open-source gateway and swap code for the real interfaces. Do not guess them. Ask the Sera.cx team where the docs are unclear.</td></tr>
+<tr><td>Rate lock</td><td>"Lock on approval" is a label.</td><td>Fetch rates at review, lock at signing, and define what happens if a rate moves or liquidity for a pair is short before settlement.</td></tr>
+<tr><td>Payout stages</td><td>A timer advances each payout.</td><td>Stages come from chain events and ramp partner status callbacks. Store transaction hashes.</td></tr>
+<tr><td>Failed payout</td><td>A checkbox in the sign prompt fails the first payout.</td><td>Detect real failures per payout, keep the rest of the run, allow retry of one payout without double paying. Retries must be idempotent.</td></tr>
+<tr><td>Screening</td><td>An address starting <code>0xdead</code> or <code>0xbad</code> is flagged.</td><td>Call a real screening service. Sera.cx publishes open-source KYT and KYA screening tools that can be the default provider.</td></tr>
+<tr><td>Ramp partners</td><td>On and off toggles per currency. Partner names are placeholders.</td><td>An adapter interface per partner (see section 9). Ship one mock adapter. Operators write their own.</td></tr>
+<tr><td>Employee verification</td><td>One button marks the employee verified.</td><td>Hand off to the off-ramp partner's hosted KYC and read the status back.</td></tr>
+<tr><td>Funding check</td><td>A fake balance per stablecoin in <code>S.bal</code>.</td><td>Read the treasury wallet balance and token allowance on chain. For bank funding, show the on-ramp partner's real deposit details and wait for their confirmation.</td></tr>
+<tr><td>Emails</td><td>Listed in the Outbox tab. Nothing is sent.</td><td>Send through an email provider behind an interface. Keep the outbox as a log.</td></tr>
+<tr><td>Statutory deductions</td><td>A flat 10% sample deduction for employees when a plug-in is on.</td><td>Country plug-ins with real rules, maintained by operators. Contractors are paid gross.</td></tr>
+<tr><td>Payslip and export</td><td>Copy to clipboard as text and CSV.</td><td>Downloadable PDF payslip and CSV export. Add accounting integrations later.</td></tr>
+<tr><td>Storage</td><td>Everything is in memory in the <code>S</code> object and is lost on reload.</td><td>A database (see section 8).</td></tr>
+<tr><td>Sign-in and permissions</td><td>A view switch and an "Acting as" dropdown.</td><td>Real accounts and role checks on the server for every action.</td></tr>
+<tr><td>Network</td><td>Ethereum is written as a label.</td><td>Store the network with every address. Start with Ethereum. Plan for the Sera.cx appchain when it is live. Never assume the network.</td></tr>
+<tr><td>Fees</td><td>0.5% sample operator fee, US$0.20 sample network fee per payout, "rate against reference 0.00%".</td><td>Operator fee from client settings, real gas estimates, real reference rate comparison.</td></tr>
+</table>
+
+<h2>6. Rules and formulas the prototype already implements</h2>
+<ul>
+<li><strong>Pay per run:</strong> monthly pay × schedule fraction. Monthly on the 28th = 1. Twice a month (14th and 28th) = 0.5. Weekly on Friday = 12/52. See <code>runInfo()</code>.</li>
+<li><strong>Net:</strong> gross minus plug-in deduction. Deductions apply to salary lines for employees only, never to contractors or one-off payments. See <code>lines()</code>.</li>
+<li><strong>Payout amount:</strong> net × split share, converted from the salary currency to the payout currency. If employees pay network fees, the fee is deducted here. See <code>legsFor()</code>.</li>
+<li><strong>Employer total:</strong> sum of payouts in the funding currency + operator fee (percentage of payouts) + network fees when the employer pays them. See <code>totals()</code>.</li>
+<li><strong>Swap needed</strong> only when the funding stablecoin differs from the payout stablecoin. A fiat payout settles in that currency's local stablecoin first (for example MYR to bank goes through MYRT). See <code>pathSteps()</code> and <code>dstAsset()</code>.</li>
+<li><strong>Blocking issues</strong> stop the whole run until fixed: no wallet address for a stablecoin payout, no off-ramp partner for a bank payout, employee not verified with the off-ramp partner, test payment missing when required.</li>
+<li><strong>Not blocking:</strong> a screening flag. That payout is held and the run proceeds.</li>
+<li><strong>Funding check</strong> must pass before signing: wallet balance covers the total, or bank funds are confirmed received.</li>
+<li><strong>Skip this run</strong> leaves a person out of one run without removing them.</li>
+<li><strong>One-off payments</strong> (bonus, contractor invoice, reimbursement) are extra lines on a run, in any supported currency, paid by the person's payout preference.</li>
+<li><strong>Decimals:</strong> IDR and JPY use 0 decimal places, others 2. The real build must use integer or decimal maths, never floating point, and define the rounding rule for conversions.</li>
+</ul>
+
+<h2>7. State machines</h2>
+<p><strong>Pay run:</strong> draft → submitted (only when two-person approval is on) → sent → complete when every payout is in a final state. A submitted run can go back to draft. A sent run cannot be edited.</p>
+<p><strong>Payout:</strong> screened → swapped on Sera.cx (if needed) → sent to wallet, or sent to off-ramp partner → arrived at bank. Side states: failed (can be retried), held (screening flag).</p>
+<p><strong>Wallet address:</strong> none → active, by employer entry or employee signature → pending change (employee-requested, 48 hour hold) → active. Flags: locked, tested. Any address change clears "tested". Locking cancels a pending change. Every transition is written to the address history.</p>
+
+<h2>8. Suggested data model</h2>
+<table>
+<tr><th>Table</th><th>Key fields</th></tr>
+<tr><td>operators</td><td>name, brand, settings (hold length, defaults)</td></tr>
+<tr><td>clients</td><td>operator_id, name, fee_percent, schedule, gas_payer, two_person, multisig, require_test_payment, treasury_wallet</td></tr>
+<tr><td>users</td><td>client_id or operator_id, role (operator_admin, preparer, approver, employee), email</td></tr>
+<tr><td>employees</td><td>client_id, name, type (employee, contractor), monthly_pay, currency, payout_primary, payout_secondary, split_percent, kyc_status, invited_at, setup_at</td></tr>
+<tr><td>wallet_addresses</td><td>employee_id, address, network, source (employer, employee_signed), signature, locked, tested, screening_status, pending_address, pending_since</td></tr>
+<tr><td>address_events</td><td>employee_id, actor, action, old_address, new_address, at</td></tr>
+<tr><td>pay_runs</td><td>client_id, label, pay_date, status, funding_asset, totals, prepared_by, approved_by, signed_with, sent_at</td></tr>
+<tr><td>run_lines</td><td>run_id, employee_id, kind (salary, bonus, invoice, reimbursement), gross, deduction, net, currency, skipped</td></tr>
+<tr><td>payouts</td><td>line_id, option, share_percent, amount, locked_rate, usd_value, stage, state, tx_hash, failure_reason, address_snapshot</td></tr>
+<tr><td>ramp_partners</td><td>operator_id, currency, on_ramp, off_ramp, adapter, config</td></tr>
+<tr><td>plugins</td><td>operator_id, country, enabled</td></tr>
+<tr><td>notifications</td><td>to, subject, kind, sent_at</td></tr>
+<tr><td>webhooks, api_keys</td><td>operator_id, url, events, secret</td></tr>
+</table>
+<p>The in-memory shape in this file (<code>S.staff</code>, <code>S.run</code>, <code>S.history</code>, <code>S.clients</code>) maps onto these tables.</p>
+
+<h2>9. Interfaces to define</h2>
+<pre class="code mono">SwapProvider (Sera.cx is the default)
+  getRate(fromStablecoin, toStablecoin, amount)
+  settle(payouts, signer)            match to the real Sera.cx interface
+
+RampAdapter (one per partner and currency)
+  getDepositInstructions(client, amount, currency)
+  confirmFundsReceived(reference)
+  startEmployeeVerification(employee)
+  getVerificationStatus(employee)
+  createBankPayout(employee, amount, currency)
+  getPayoutStatus(payoutId)
+
+ScreeningProvider
+  screen(address, network)           returns clear or flagged with a reason
+
+StatutoryPlugin (one per country)
+  compute(gross, employee, period)   returns deductions and net
+
+Notifier
+  send(to, kind, data)</pre>
+<p>API and webhook sketch (also shown under Operator, API and webhooks):</p>
+<pre class="code mono">POST /v1/employees/import      upload a pay file
+POST /v1/runs                  create a draft run
+POST /v1/runs/{id}/submit      preparer submits
+POST /v1/runs/{id}/approve     approver signs and sends
+GET  /v1/runs/{id}/payouts     stage of every payout
+POST /v1/payouts/{id}/retry    retry one failed payout
+GET  /v1/runs/{id}/export      accounting export
+
+Webhooks: run.submitted, run.sent, payout.screened, payout.swapped,
+payout.sent, payout.arrived, payout.failed, payout.held,
+address.change_requested, address.locked</pre>
+
+<h2>10. Pay file format for bulk import</h2>
+<pre class="code mono">name,salary,currency,address,type
+Siti Aminah,5200,MYR,0x4b1D...c1D4,Employee
+Maria Lim,3800,SGD,,Employee</pre>
+<p>Address and type are optional. Type defaults to Employee. Reject a row with a missing name, a salary that is not above zero, an unsupported currency or a malformed address, and report each rejected line. See <code>importCsv()</code>. The real build should also catch duplicate people and duplicate addresses.</p>
+
+<h2>11. Security requirements</h2>
+<ul>
+<li>Address changes are the main payroll fraud route. Require re-authentication for a change, verify the wallet signature on the server, apply the hold, and notify both the employee and the employer admin.</li>
+<li>Enforce preparer and approver separation on the server, not only in the UI.</li>
+<li>Write an audit record for every address, lock, approval and payout action, with who and when.</li>
+<li>Keep personal data to the minimum. No bank details. Treat salary data as confidential and scope every query by client.</li>
+<li>Screen before every payout, not only when the address is added.</li>
+<li>Payout retries must never pay twice.</li>
+<li>Escape all user-supplied text. The prototype does this with <code>esc()</code>.</li>
+</ul>
+
+<h2>12. Risks to keep visible</h2>
+<ul>
+<li><strong>Employment law:</strong> many countries require salary for formal employees to be paid in legal tender. Contractors and opt-in portions of pay are the safer starting ground. Operators need local legal advice. Put this in the README.</li>
+<li><strong>Licensing:</strong> moving salaries and handling fiat are regulated. The operator and its ramp partners carry the licences. Sera.cx holds no licence of its own, so the Sera.cx-hosted demo must stay on a testnet and must never move real salaries.</li>
+<li><strong>Forks can reroute swaps.</strong> Keep Sera.cx as the default SwapProvider. The non-USD pairs are the reason to stay on it.</li>
+<li><strong>Batch size:</strong> pay runs to hundreds of wallets need batched transactions and low fees. Design for the Sera.cx appchain once it is live.</li>
+</ul>
+
+<h2>13. Brand and copy rules (Sera.cx Green Field)</h2>
+<ul>
+<li>Sera green <code>#00D26A</code> is the primary colour. White or green-tinted backgrounds only. No black backgrounds. Black is for type and linework.</li>
+<li>Inter ExtraBold for headlines. Chivo Mono Bold or ExtraBold for figures.</li>
+<li>Write "Sera.cx", never "Sera" alone. Singapore and British spelling. No em dashes.</li>
+<li>Say "stablecoin", never "token", for the currency.</li>
+<li>Sera.cx settles with actual liquidity. Never describe it as "quoting".</li>
+<li>The operator's brand leads. "Settlement by Sera.cx" is the only Sera.cx mark in the operator's product.</li>
+</ul>
+
+<h2>14. Placeholders to replace</h2>
+<p><code>[YOUR PAYROLL BRAND]</code>, <code>[REPO LINK]</code>, <code>[PARTNER NAME]</code>, <code>[ON-RAMP PARTNER ACCOUNT]</code>, <code>[YOUR DOMAIN]</code>. All names, salaries, client names, rates (4.20 MYR, 1.30 SGD, 16,500 IDR and 150 JPY per USD), fees and wallet addresses in this file are samples.</p>
+
+<h2>15. Suggested build order</h2>
+<ol>
+<li><strong>Scaffold:</strong> repo, database with the tables above, accounts and roles, and this UI ported screen for screen. Done when every view in this file exists against real stored data.</li>
+<li><strong>Employees:</strong> add, edit, remove, bulk import, invite links, address entry by employer, address signing by employee with server-side verification, lock, hold, history. Done when the address rules in sections 4 and 7 pass tests.</li>
+<li><strong>Pay run engine:</strong> schedules, lines, one-offs, skip, fees, blocking issues, funding check, preparer and approver flow. Done when totals match this prototype for the same inputs.</li>
+<li><strong>On chain:</strong> wallet connection, testnet stablecoins, batched payouts, Sera.cx swap integration, stages from chain events, idempotent retry. Done when a testnet run pays several wallets in different stablecoins.</li>
+<li><strong>Screening and ramps:</strong> screening provider, RampAdapter interface with one mock adapter, employee verification hand-off, bank funding and bank payout states.</li>
+<li><strong>Records and messages:</strong> PDF payslip, accounting export, email notifications, outbox log.</li>
+<li><strong>Operator:</strong> clients with their own rosters and fees, plug-in interface with one sample plug-in, API and webhooks.</li>
+<li><strong>Public demo:</strong> hosted on a testnet with the demo banner, a reset, sample data, and a README that explains what a fork must add.</li>
+</ol>
+<p>Suggested stack, change freely: TypeScript, React, a Postgres database, and a standard Ethereum wallet library. Keep every outside service behind the interfaces in section 9 so forks can swap them.</p>
+
+<h2>16. Where things are in this file's script</h2>
+<table>
+<tr><th>Function</th><th>What it shows</th></tr>
+<tr><td><code>runInfo</code></td><td>Schedule, pay dates and pay fraction</td></tr>
+<tr><td><code>lines</code>, <code>legsFor</code></td><td>Run lines, deductions, splits, blocking issues, screening flag</td></tr>
+<tr><td><code>totals</code></td><td>Employer total, fees, funding check, whether the run can be sent</td></tr>
+<tr><td><code>pathSteps</code>, <code>rateLine</code></td><td>The route and rate shown for each payout</td></tr>
+<tr><td><code>submitRun</code>, <code>openSign</code>, <code>confirmSend</code></td><td>Approval and sending</td></tr>
+<tr><td><code>buildRecord</code>, <code>tick</code>, <code>retry</code></td><td>Run record, payout stages, failure and retry</td></tr>
+<tr><td><code>empSetAddr</code>, <code>staffApply</code>, <code>toggleLock</code>, <code>approvePending</code>, <code>cancelPending</code></td><td>Address entry, signing, lock and hold</td></tr>
+<tr><td><code>importCsv</code></td><td>Pay file import and validation</td></tr>
+<tr><td><code>csvFor</code>, <code>slipText</code></td><td>Accounting export and payslip contents</td></tr>
+<tr><td><code>pickClient</code></td><td>Per-client data separation</td></tr>
+<tr><td><code>employerRun</code>, <code>employerStaff</code>, <code>employerHistory</code>, <code>employeeView</code>, <code>operatorView</code>, <code>signDialog</code></td><td>The screens</td></tr>
+</table>
+
+<h2>17. Still open</h2>
+<ul>
+<li>Is employee self-service address change on by default, or does it need employer approval? Current default: self-service with the hold.</li>
+<li>Which networks at launch besides Ethereum, and when to move to the Sera.cx appchain.</li>
+<li>Exact rate-lock window and what happens when a locked rate cannot be met.</li>
+<li>Whether a held payout can be released after review, and by whom.</li>
+<li>Whether one-off payments need their own approval limit.</li>
+<li>Licence for the repo.</li>
+</ul>
+</section>
+
+
+<script>
+var RATE={USD:1,MYR:4.20,SGD:1.30,IDR:16500,JPY:150};
+var ASSET={USDT:'USD',USDC:'USD',MYRT:'MYR',XSGD:'SGD',IDRT:'IDR',JPYC:'JPY'};
+var LOCAL={USD:'USDC',MYR:'MYRT',SGD:'XSGD',IDR:'IDRT',JPY:'JPYC'};
+var RAIL={USD:'Bank wire',MYR:'DuitNow',SGD:'PayNow',IDR:'BI-FAST',JPY:'Bank transfer'};
+var SYM={USD:'US$',MYR:'RM',SGD:'S$',IDR:'Rp',JPY:'¥'};
+function fmtD(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
+function runInfo(idx){
+  var s=S.settings.schedule,d;
+  if(/^Weekly/.test(s)){d=new Date(2026,10,20+7*idx);return{label:'Week to '+fmtD(d),payday:fmtD(d),frac:12/52,per:'each run pays 12/52 of monthly pay'}}
+  if(/^Twice/.test(s)){d=new Date(2026,10+Math.floor((idx+1)/2),idx%2===0?28:14);return{label:'Period to '+fmtD(d),payday:fmtD(d),frac:0.5,per:'each run pays half of monthly pay'}}
+  d=new Date(2026,10+idx,28);return{label:d.toLocaleDateString('en-GB',{month:'long',year:'numeric'}),payday:fmtD(d),frac:1,per:''};
+}
+var GAS=0.20,PLUGRATE=0.10,ADDR=/^0x[0-9a-fA-F]{40}$/;
+var SAMPLECSV='name,salary,currency,address,type\nSiti Aminah,5200,MYR,0x4b1D9e7A2c5F8036d1E4a7B0c3F6d9E2a5B8c1D4,Employee\nKenji Sato,420000,JPY,0x7c2E0f8B3d6A9147e2F5b8C1d4A7e0F3b6C9d2E5,Contractor\nBudi Santoso,15000000,IDR,0xdead00000000000000000000000000000000beef,Contractor\nMaria Lim,3800,SGD,,Employee';
+function W(addr,by,locked){return{addr:addr,by:by,locked:locked,tested:!!addr,pending:null,log:addr?[{t:'Sample',text:(by==='employee'?'Signed by employee':'Entered by employer')+(locked?', then locked by employer':'')}]:[]}}
+function P(id,name,type,amt,ccy,a,b,pct,w,kyc,setup){return{id:id,name:name,type:type,amt:amt,ccy:ccy,a:a,b:b,pct:pct,w:w,kyc:kyc,setup:setup}}
+var S={
+  view:'employer',tab:'run',q:'',actor:'preparer',fund:'USDT',viewer:1,signing:false,sigs:0,failDemo:false,importMsg:'',openRun:null,
+  run:{idx:0,status:'draft',extras:[],skip:[],funded:false,rec:null},
+  bal:{USDT:12000,USDC:6000,MYRT:40000,XSGD:3000},
+  ramps:{USD:{on:true,off:true},MYR:{on:true,off:true},SGD:{on:true,off:true},IDR:{on:false,off:false},JPY:{on:false,off:false}},
+  settings:{twoPerson:true,multisig:false,schedule:'Monthly on the 28th',gasPayer:'employer',requireTest:false},
+  plugins:{MYR:false,SGD:false,IDR:false},
+  clients:[{name:'Sample Studio Sdn Bhd',fee:0.5},{name:'Sample Labs Pte Ltd',fee:0.35},{name:'Sample Exports Ltd',fee:0.8}],client:0,
+  staff:[
+    P(1,'Aisyah Rahman','Employee',8500,'MYR','MYRT',null,100,W('0x71C2a4b9E05d3F8a61B7c0D2e94F5a3B8c6D9c4E','employee',false),true,true),
+    P(2,'Tan Wei Jie','Employee',6200,'SGD','bank:SGD',null,100,W('','',false),true,true),
+    P(3,'Nurul Huda','Employee',6000,'MYR','bank:MYR','USDT',70,W('0x3aF09b1C7d2E4f6A8b0C1d3E5f7A9b2C4d6E8f01','employer',false),true,true),
+    P(4,'Daniel Lee','Contractor',4000,'USD','USDC',null,100,W('0x9E8d7C6b5A4f3E2d1C0b9A8f7E6d5C4b3A2f1E0d','employee',true),false,true),
+    P(5,'Putri Wulandari','Contractor',18000000,'IDR','IDRT',null,100,W('','',false),false,false)
+  ],nextId:6,nextX:1,history:[],outbox:[]
+};
+var timer=null;
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function isBank(o){return o.indexOf('bank:')===0}
+function ccyOf(o){return isBank(o)?o.slice(5):ASSET[o]}
+function dp(c){return(c==='IDR'||c==='JPY')?0:2}
+function num(n,c){return n.toLocaleString('en-GB',{minimumFractionDigits:dp(c),maximumFractionDigits:dp(c)})}
+function money(n,o){var c=ccyOf(o);return isBank(o)?SYM[c]+' '+num(n,c):num(n,c)+' '+o}
+function fiat(n,c){return SYM[c]+' '+num(n,c)}
+function conv(n,from,to){return n/RATE[from]*RATE[to]}
+function optLabel(o){return isBank(o)?ccyOf(o)+' to bank':o}
+function optSub(o){var c=ccyOf(o);return isBank(o)?RAIL[c]+' via off-ramp partner':c+' stablecoin to wallet'}
+function payOpts(){var l=['MYRT','XSGD','USDT','USDC','IDRT','JPYC'];['MYR','SGD','USD','IDR'].forEach(function(c){l.push('bank:'+c)});return l}
+function fundOpts(){return['USDT','USDC','MYRT','XSGD','bank:MYR','bank:SGD','bank:USD']}
+function srcAsset(){return isBank(S.fund)?LOCAL[ccyOf(S.fund)]:S.fund}
+function dstAsset(o){return isBank(o)?LOCAL[ccyOf(o)]:o}
+function short(a){return a.slice(0,6)+'…'+a.slice(-4)}
+function byId(id){return S.staff.filter(function(e){return e.id===id})[0]}
+function me(){return byId(S.viewer)||S.staff[0]}
+function flagged(a){return /^0x(dead|bad)/i.test(a)}
+function feePct(){return S.clients[S.client].fee}
+function now(){return new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+function logW(e,text){e.w.log.unshift({t:now(),text:text})}
+function mail(to,subject){S.outbox.unshift({t:now(),to:to,subject:subject})}
+function toast(m){var t=document.getElementById('toast');t.innerHTML='<div class="toast" role="status">'+esc(m)+'</div>';setTimeout(function(){t.innerHTML=''},2200)}
+function copyText(text,label){try{navigator.clipboard.writeText(text).then(function(){toast(label+' copied')},function(){toast('Copy was blocked. Select the text and copy it by hand.')})}catch(x){toast('Copy was blocked. Select the text and copy it by hand.')}}
+function fakeTx(){var h='0x';for(var i=0;i<64;i++)h+='0123456789abcdef'[Math.floor(Math.random()*16)];return h}
+function randAddr(){return fakeTx().slice(0,42)}
+
+function pathSteps(o){
+  var fc=ccyOf(S.fund),src=srcAsset(),st=[];
+  if(isBank(S.fund)){st.push(['Bank '+fc],['On-ramp partner'])}
+  st.push([src]);var dst=dstAsset(o);
+  if(src!==dst){st.push(['Sera.cx swap',1],[dst])}
+  if(isBank(o)){st.push(['Off-ramp partner'],[RAIL[ccyOf(o)]])}else{st.push(['Wallet'])}
+  return st.map(function(s){return'<span class="step'+(s[1]?' sera':'')+'">'+s[0]+'</span>'}).join('<span class="arrow" aria-hidden="true">&rarr;</span>');
+}
+function rateLine(o){var src=srcAsset(),dst=dstAsset(o);if(src===dst)return'No swap needed';var r=RATE[ASSET[dst]]/RATE[ASSET[src]];return'1 '+src+' = '+r.toLocaleString('en-GB',{minimumFractionDigits:4,maximumFractionDigits:4})+' '+dst}
+function legsFor(e,net,ccy){
+  var l=[{o:e.a,pct:e.b?e.pct:100}];if(e.b)l.push({o:e.b,pct:100-e.pct});
+  return l.map(function(x){
+    var c=ccyOf(x.o),bank=isBank(x.o);
+    x.amt=conv(net*x.pct/100,ccy,c)-(S.settings.gasPayer==='employee'?GAS*RATE[c]:0);
+    x.issue=bank?(!S.ramps[c].off?'No off-ramp partner connected for '+c+'.':(!e.kyc?'Not yet verified with the off-ramp partner. The employee does this in their view.':'')):(!e.w.addr?'No wallet address on file. Enter one under Employees, or the employee can sign theirs.':((S.settings.requireTest&&!e.w.tested)?'Test payment not done for this address yet.':''));
+    x.flag=!bank&&!!e.w.addr&&flagged(e.w.addr);return x;
+  });
+}
+function lines(){
+  var L=[],fr=runInfo(S.run.idx).frac;S.staff.forEach(function(e){L.push({e:e,gross:e.amt*fr,ccy:e.ccy,note:'Salary',skipped:S.run.skip.indexOf(e.id)>=0})});
+  S.run.extras.forEach(function(x){var e=byId(x.staffId);if(e)L.push({e:e,gross:x.amt,ccy:x.ccy,note:x.note,xid:x.id})});
+  return L.map(function(l){l.ded=(l.note==='Salary'&&l.e.type==='Employee'&&S.plugins[l.ccy])?l.gross*PLUGRATE:0;l.net=l.gross-l.ded;l.legs=l.skipped?[]:legsFor(l.e,l.net,l.ccy);return l});
+}
+function totals(){
+  var fc=ccyOf(S.fund),src=srcAsset(),t={pay:0,n:0,swaps:0,bank:0,wallet:0,issues:0,skipped:0};
+  lines().forEach(function(l){l.legs.forEach(function(g){if(g.issue){t.issues++;return}if(g.flag){t.skipped++;return}t.pay+=conv(g.amt,ccyOf(g.o),fc);t.n++;if(dstAsset(g.o)!==src)t.swaps++;if(isBank(g.o))t.bank++;else t.wallet++})});
+  t.fee=t.pay*feePct()/100;t.gas=S.settings.gasPayer==='employer'?t.n*GAS*RATE[fc]:0;t.need=t.pay+t.fee+t.gas;
+  if(isBank(S.fund)){t.rampOk=S.ramps[fc].on;t.fundOk=t.rampOk&&S.run.funded}else{t.bal=S.bal[S.fund]||0;t.short=Math.max(0,t.need-t.bal);t.fundOk=t.short<=0}
+  t.ready=!t.issues&&t.n>0;t.canSend=t.ready&&t.fundOk;return t;
+}
+function buildRecord(idx,seed){
+  var t=totals(),inf=runInfo(idx),rec={label:inf.label,payday:inf.payday,by:S.settings.twoPerson?'Prepared by the preparer, approved by the approver':'Prepared and signed by one admin',sig:S.settings.multisig?'a 2 of 3 multisig':'a single wallet',fund:S.fund,need:t.need,fee:t.fee,gas:t.gas,n:t.n,swaps:t.swaps,items:[]};
+  var failAt=(!seed&&S.failDemo)?0:-1,k=0;
+  lines().forEach(function(l){
+    var it={staffId:l.e.id,name:l.e.name,type:l.e.type,note:l.note,ccy:l.ccy,gross:l.gross,ded:l.ded,net:l.net,legs:[]};
+    l.legs.forEach(function(g){
+      if(g.issue)return;
+      var swap=dstAsset(g.o)!==srcAsset(),bank=isBank(g.o),st=['Screened'];
+      if(swap)st.push('Swapped on Sera.cx');
+      if(bank){st.push('Sent to off-ramp partner','Arrived at bank')}else st.push('Sent to wallet');
+      var leg={o:g.o,pct:g.pct,amt:g.amt,text:money(g.amt,g.o),sub:optSub(g.o)+(bank?'':', '+short(l.e.w.addr)+' on Ethereum'),rate:rateLine(g.o),path:pathSteps(g.o),usd:conv(g.amt,ccyOf(g.o),'USD'),stages:st,at:seed?st.length-1:0,state:seed?'done':'run',tx:seed?fakeTx():''};
+      if(g.flag){leg.state='skipped';leg.at=0;leg.reason='Address flagged by screening. Payout held, the rest of the run went ahead.'}
+      else{if(k===failAt)leg.willFail=true;k++}
+      it.legs.push(leg);
+    });
+    if(it.legs.length)rec.items.push(it);
+  });
+  return rec;
+}
+function recStatus(r){var run=0,fail=0,skip=0;r.items.forEach(function(i){i.legs.forEach(function(g){if(g.state==='run')run++;if(g.state==='failed')fail++;if(g.state==='skipped')skip++})});return run?'In progress':fail?fail+' failed':skip?'Complete, '+skip+' held':'Complete'}
+function tick(){
+  var moving=false;
+  allHist().forEach(function(r){r.items.forEach(function(i){i.legs.forEach(function(g){
+    if(g.state!=='run')return;
+    if(g.willFail&&g.at===0){g.state='failed';g.willFail=false;g.reason='Network error (simulated). Nothing left the wallet for this payout.';return}
+    g.at++;
+    if(g.at>=g.stages.length-1){g.at=g.stages.length-1;g.state='done';g.tx=fakeTx()}else moving=true;
+    if(g.state==='run')moving=true;
+  })})});
+  if(!moving&&timer){clearInterval(timer);timer=null}
+  if(S.view==='employer'&&(S.tab==='run'||S.tab==='history'))render();
+}
+function allHist(){var a=S.history.slice();S.clients.forEach(function(c,i){if(i!==S.client&&c.data)a=a.concat(c.data.history)});return a}
+function startTimer(){if(!timer)timer=setInterval(tick,1100)}
+
+/* actions */
+function setView(v){S.view=v;S.tab=v==='operator'?'clients':'run';render()}
+function setTab(t){S.tab=t;S.openRun=null;render()}
+function setActor(a){S.actor=a;render()}
+function setFund(o){if(S.run.status==='draft'){S.fund=o;S.run.funded=false;render()}}
+function topUp(){var t=totals();S.bal[S.fund]=(S.bal[S.fund]||0)+Math.ceil(t.short/100)*100+100;render()}
+function markFunded(){S.run.funded=true;render()}
+function submitRun(){if(!totals().ready)return;S.run.status='submitted';S.actor='approver';mail('Approver','Pay run '+runInfo(S.run.idx).label+' is waiting for your signature');render()}
+function backToDraft(){S.run.status='draft';S.actor='preparer';render()}
+function openSign(){if(!totals().canSend)return;S.signing=true;S.sigs=0;render()}
+function cancelSign(){S.signing=false;render()}
+function addSig(){S.sigs++;render()}
+function setFail(v){S.failDemo=v}
+function confirmSend(){
+  var t=totals();if(!t.canSend)return;
+  var rec=buildRecord(S.run.idx,false);rec.sent=now();
+  if(!isBank(S.fund))S.bal[S.fund]-=t.need;
+  S.history.unshift(rec);S.run.rec=rec;S.run.status='sent';S.signing=false;S.failDemo=false;
+  rec.items.forEach(function(i){if(i.legs.some(function(g){return g.state!=='skipped'}))mail(i.name,'You have been paid: '+i.note.toLowerCase()+' for '+rec.label)});
+  startTimer();render();
+}
+function retry(ri,ii,gi){var g=S.history[ri].items[ii].legs[gi];g.state='run';g.at=0;startTimer();render()}
+function nextRun(){S.run={idx:S.run.idx+1,status:'draft',extras:[],skip:[],funded:false,rec:null};S.actor='preparer';render()}
+function addExtra(ev){ev.preventDefault();var f=ev.target,a=parseFloat(f.a.value);if(!(a>0))return;S.run.extras.push({id:S.nextX++,staffId:parseInt(f.p.value,10),amt:a,ccy:f.c.value,note:f.n.value});render()}
+function delExtra(id){S.run.extras=S.run.extras.filter(function(x){return x.id!==id});render()}
+function addStaff(ev){ev.preventDefault();var f=ev.target,n=f.n.value.trim(),a=parseFloat(f.a.value);if(!n||!(a>0))return;S.staff.push(P(S.nextId++,n,f.t.value,a,f.c.value,LOCAL[f.c.value],null,100,W('','',false),false,false));render()}
+function removeStaff(id){S.staff=S.staff.filter(function(e){return e.id!==id});S.run.extras=S.run.extras.filter(function(x){return x.staffId!==id});if(S.viewer===id&&S.staff.length)S.viewer=S.staff[0].id;render()}
+function loadSample(){document.getElementById('csv').value=SAMPLECSV}
+function readFile(inp){var f=inp.files&&inp.files[0];if(!f)return;var r=new FileReader();r.onload=function(){document.getElementById('csv').value=r.result};r.readAsText(f)}
+function importCsv(text){
+  var ok=0,bad=[];
+  String(text).split(/\r?\n/).forEach(function(line,i){
+    if(!line.trim())return;var c=line.split(',').map(function(x){return x.trim()});
+    if(i===0&&c[0].toLowerCase()==='name')return;
+    var amt=parseFloat(c[1]),ccy=(c[2]||'').toUpperCase(),addr=c[3]||'',type=/contractor/i.test(c[4]||'')?'Contractor':'Employee';
+    if(!c[0]||!(amt>0)||!RATE[ccy]){bad.push('line '+(i+1)+': needs name, salary and a supported currency');return}
+    if(addr&&!ADDR.test(addr)){bad.push('line '+(i+1)+': address is not valid');return}
+    S.staff.push(P(S.nextId++,c[0],type,amt,ccy,LOCAL[ccy],null,100,(function(w){w.tested=false;return w})(W(addr,addr?'employer':'',false)),false,false));ok++;
+  });
+  S.importMsg='Imported '+ok+'.'+(bad.length?' Skipped '+bad.length+' ('+bad.join('; ')+').':'');render();
+}
+function doImport(){importCsv(document.getElementById('csv').value)}
+function empSetAddr(ev,id){ev.preventDefault();var e=byId(id),v=ev.target.addr.value.trim();if(e.w.locked)return;e.w.addr=v;e.w.by='employer';e.w.tested=false;e.w.pending=null;logW(e,'Employer entered '+short(v));render()}
+function toggleLock(id){var e=byId(id);e.w.locked=!e.w.locked;if(e.w.locked&&e.w.pending){e.w.pending=null;logW(e,'Pending change cancelled by lock')}logW(e,e.w.locked?'Locked by employer':'Unlocked by employer');render()}
+function testPay(id){var e=byId(id);e.w.tested=true;logW(e,'Test payment confirmed');toast('Test payment confirmed (simulated)');render()}
+function invite(id){var e=byId(id);mail(e.name,'You are invited to set up how you get paid');copyText('https://[YOUR DOMAIN]/invite/'+id,'Invite link');render()}
+function staffApply(addr,how){var e=me();if(e.w.locked)return;e.setup=true;if(!e.w.addr){e.w.addr=addr;e.w.by='employee';e.w.tested=false;logW(e,'Employee '+how+' '+short(addr))}else{e.w.pending={addr:addr,how:how};logW(e,'Employee requested change to '+short(addr)+', 48 hour hold started');mail('Employer admin',e.name+' asked to change their wallet address');mail(e.name,'Your wallet address change was requested. Cancel it if this was not you')}render()}
+function staffSign(){staffApply(randAddr(),'signed')}
+function staffPaste(ev){ev.preventDefault();staffApply(ev.target.addr.value.trim(),'pasted')}
+function cancelPending(id){var e=byId(id);e.w.pending=null;logW(e,'Pending change cancelled');render()}
+function approvePending(id){var e=byId(id);if(!e.w.pending)return;e.w.addr=e.w.pending.addr;e.w.by='employee';e.w.tested=false;e.w.pending=null;logW(e,'Employer approved change to '+short(e.w.addr)+' early');render()}
+function doKyc(){var e=me();e.kyc=true;e.setup=true;toast('Verified with off-ramp partner (simulated)');render()}
+function pickA(o){var e=me();e.a=o;e.setup=true;if(e.b===o)e.b=null;render()}
+function setSplit(on){var e=me();if(on){e.b=e.a==='USDT'?'MYRT':'USDT';e.pct=70}else{e.b=null;e.pct=100}render()}
+function setB(o){me().b=o;render()}
+function setPct(v){me().pct=parseInt(v,10);render()}
+function setViewer(v){S.viewer=parseInt(v,10);render()}
+function toggleSkip(id){var i=S.run.skip.indexOf(id);if(i>=0)S.run.skip.splice(i,1);else S.run.skip.push(id);render()}
+function setQ(v){S.q=v;render()}
+function setAmt(id,v){var n=parseFloat(v);if(n>0)byId(id).amt=n;render()}
+function setType(id,v){byId(id).type=v;render()}
+function resetDemo(){if(timer){clearInterval(timer);timer=null}S=JSON.parse(INITIAL);render();toast('Demo reset to the starting data')}
+function setSetting(k,v){S.settings[k]=v;render()}
+function toggleRamp(c,k,v){S.ramps[c][k]=v;render()}
+function togglePlug(c,v){S.plugins[c]=v;render()}
+function pickClient(i){var K=['staff','run','history','outbox','bal','settings','fund','viewer','actor'],cur={};K.forEach(function(k){cur[k]=S[k]});S.clients[S.client].data=cur;var d=S.clients[i].data;K.forEach(function(k){S[k]=d[k]});S.clients[i].data=null;S.client=i;S.openRun=null;S.q='';S.importMsg='';render()}
+function setFee(i,v){var n=parseFloat(v);if(n>=0)S.clients[i].fee=n;render()}
+function openRunDetail(i){S.openRun=i;render()}
+function csvFor(r){
+  var out=['run,pay date,name,type,item,gross,deduction,net,currency,paid as,amount,rate,usd value,status,tx'];
+  r.items.forEach(function(i){i.legs.forEach(function(g){out.push([r.label,r.payday,i.name,i.type,i.note,i.gross.toFixed(dp(i.ccy)),i.ded.toFixed(dp(i.ccy)),i.net.toFixed(dp(i.ccy)),i.ccy,optLabel(g.o),g.amt.toFixed(dp(ccyOf(g.o))),'"'+g.rate+'"',g.usd.toFixed(2),g.state==='done'?'paid':g.state,g.tx].join(','))})});
+  return out.join('\n');
+}
+function slipText(r,i){
+  var t=[r.label+' payslip','Paid '+r.payday,i.name+' ('+i.type+')',i.note,'Gross: '+fiat(i.gross,i.ccy)];
+  if(i.ded)t.push('Statutory deductions: '+fiat(i.ded,i.ccy));
+  t.push('Net: '+fiat(i.net,i.ccy));
+  i.legs.forEach(function(g){t.push('Received: '+g.text+' ('+g.sub+'), value US$ '+num(g.usd,'USD')+', '+g.rate+(g.tx?', tx '+g.tx:''))});
+  return t.join('\n');
+}
+function copyCsv(i){copyText(csvFor(S.history[i]),'Accounting export')}
+function copySlip(ri,ii){copyText(slipText(S.history[ri],S.history[ri].items[ii]),'Payslip')}
+
+/* views */
+function srcChip(w){return w.addr?'<span class="chip">'+(w.by==='employee'?'Signed by employee':'Entered by employer')+'</span>'+(w.locked?' <span class="chip paid">Locked</span>':'')+(w.tested?' <span class="chip plain">Tested</span>':'')+(flagged(w.addr)?' <span class="chip warn">Flagged by screening</span>':''):'<span class="chip warn">No wallet address</span>'}
+function stageHtml(g){
+  if(g.state==='skipped')return'<div class="err">Held. '+g.reason+'</div>';
+  var h='<div class="path">'+g.stages.map(function(s,i){var c=g.state==='done'||i<g.at?'done':(i===g.at&&g.state==='run'?'now':'todo');return'<span class="step '+c+'">'+s+'</span>'}).join('<span class="arrow" aria-hidden="true">&rarr;</span>')+'</div>';
+  if(g.state==='failed')h+='<div class="err">Failed. '+g.reason+'</div>';
+  if(g.tx)h+='<div class="fine mono addr">tx '+short(g.tx)+' (sample hash)</div>';
+  return h;
+}
+function recordHtml(r,ri){
+  var h='<div class="card">';
+  r.items.forEach(function(i,ii){
+    h+='<div class="row"><div class="rowtop"><span class="name">'+esc(i.name)+' <span class="chip plain">'+esc(i.note)+'</span></span><span class="mono" style="font-weight:700">'+fiat(i.net,i.ccy)+'</span></div>';
+    i.legs.forEach(function(g,gi){h+='<div class="rowtop"><span class="mono" style="font-weight:700">'+g.text+'</span><span class="fine mono">'+g.rate+'</span></div>'+stageHtml(g);if(g.state==='failed')h+='<div><button type="button" class="ghostbtn" onclick="retry('+ri+','+ii+','+gi+')">Retry this payout</button></div>'});
+    h+='<div><button type="button" class="ghostbtn" onclick="copySlip('+ri+','+ii+')">Copy payslip</button></div></div>';
+  });
+  return h+'</div>';
+}
+function fundingBox(t){
+  var h='<section><h2>2. Funding check</h2><div class="card pad">';
+  if(isBank(S.fund)){
+    var c=ccyOf(S.fund);
+    if(!t.rampOk)h+='<div class="err">No on-ramp partner connected for '+c+'.</div>';
+    else if(S.run.funded)h+='<div><span class="chip paid">Funds received</span></div><div class="fine">The on-ramp partner converted your transfer to '+LOCAL[c]+'.</div>';
+    else h+='<div class="kv"><span>Transfer</span><span class="mono">'+fiat(t.need,c)+'</span></div><div class="kv"><span>To</span><span>[ON-RAMP PARTNER ACCOUNT]</span></div><div class="kv"><span>Reference</span><span class="mono">PAYRUN-'+(S.run.idx+1)+'</span></div><div><span class="chip warn">Waiting for funds</span></div><div><button type="button" class="ghostbtn" onclick="markFunded()">Mark funds received (demo)</button></div>';
+  }else{
+    h+='<div class="kv"><span>Treasury wallet balance</span><span class="mono">'+money(t.bal,S.fund)+'</span></div><div class="kv"><span>This run needs</span><span class="mono">'+money(t.need,S.fund)+'</span></div>';
+    h+=t.short>0?'<div class="err">Short by '+money(t.short,S.fund)+'. Top up before signing.</div><div><button type="button" class="ghostbtn" onclick="topUp()">Top up demo wallet</button></div>':'<div><span class="chip paid">Enough to cover this run</span></div>';
+  }
+  return h+'</div></section>';
+}
+function employerRun(){
+  var r=S.run,inf=runInfo(r.idx),label=inf.label,h;
+  if(r.status==='sent'){
+    var ri=S.history.indexOf(r.rec),st=recStatus(r.rec);
+    h='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h1>'+r.rec.label+' pay run</h1><span class="chip paid">Signed and sent</span><span class="chip'+(/failed/.test(st)?' warn':'')+'">'+st+'</span></div><p class="sub">Sent '+r.rec.sent+'. Each payout moves through its stages below.</p>';
+    h+='<div class="cols"><div class="main"><section><h2>Payout tracking</h2>'+recordHtml(r.rec,ri)+'</section></div><aside class="side"><div class="ghost" aria-hidden="true">S</div><div class="fine" style="font-weight:600">You sent</div><div><div class="big mono">'+num(r.rec.need,ccyOf(r.rec.fund))+'</div><div class="mono" style="font-weight:700">'+(isBank(r.rec.fund)?ccyOf(r.rec.fund)+' by bank transfer':r.rec.fund)+'</div></div><div class="kv"><span>Payouts</span><span>'+r.rec.n+'</span></div><div class="kv"><span>Swaps on Sera.cx</span><span>'+r.rec.swaps+'</span></div><div class="kv"><span>Schedule</span><span>'+S.settings.schedule+'</span></div><button type="button" class="cta" onclick="nextRun()">Draft the next run</button><p class="fine">The next run copies this roster. Payslips are in the Employee view and the export is under History.</p></aside></div>';
+    return h;
+  }
+  var t=totals(),sub=r.status==='submitted',L=lines();
+  h='<div class="rowtop"><div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h1>'+label+' pay run</h1><span class="chip'+(sub?' warn':'')+'">'+(sub?'Waiting for approver':'Draft')+'</span></div><p class="sub">'+L.length+' payments. Pays on '+inf.payday+'. '+S.settings.schedule+(inf.per?', '+inf.per:'')+'.</p></div>';
+  if(S.settings.twoPerson)h+='<label style="min-width:180px">Acting as<select onchange="setActor(this.value)"><option value="preparer" '+(S.actor==='preparer'?'selected':'')+'>Preparer</option><option value="approver" '+(S.actor==='approver'?'selected':'')+'>Approver</option></select></label>';
+  h+='</div><div class="cols"><div class="main"><section><h2>1. Fund this pay run in</h2><div class="opts">';
+  fundOpts().forEach(function(o){var ok=!isBank(o)||S.ramps[ccyOf(o)].on;h+='<button type="button" class="opt" aria-pressed="'+(S.fund===o)+'" '+((sub||!ok)?'disabled':'')+' onclick="setFund(\''+o+'\')">'+(isBank(o)?'Bank '+ccyOf(o):o)+(isBank(o)?'<small>'+(ok?'via on-ramp partner':'no on-ramp connected')+'</small>':'')+'</button>'});
+  h+='</div></section>'+fundingBox(t)+'<section><h2>3. Who gets what</h2><div class="card">';
+  if(!L.length)h+='<div class="row"><span class="sub">No employees yet. Add or import them under Employees.</span></div>';
+  L.forEach(function(l){
+    h+='<div class="row"><div class="rowtop"><span class="name">'+esc(l.e.name)+' <span class="chip plain">'+esc(l.note)+'</span> <span class="chip plain">'+l.e.type+'</span></span><span class="mono" style="font-weight:700">'+fiat(l.net,l.ccy)+'</span></div>';
+    if(l.ded)h+='<div class="fine">Gross '+fiat(l.gross,l.ccy)+', statutory plug-in deducts '+fiat(l.ded,l.ccy)+' (sample rate)</div>';
+    if(l.skipped)h+='<div class="fine" style="font-weight:600;color:var(--ink)">Skipped for this run. Nothing will be sent.</div>';
+    l.legs.forEach(function(g){
+      h+='<div class="rowtop"><span><span class="chip">'+g.pct+'%</span> <span class="mono" style="font-weight:700">'+money(g.amt,g.o)+'</span></span><span class="fine mono">'+rateLine(g.o)+'</span></div><div class="path">'+pathSteps(g.o)+'</div>';
+      if(g.issue)h+='<div class="err">'+g.issue+'</div>';
+      else if(g.flag)h+='<div class="err">Screening flagged this address. This payout will be held and the rest of the run goes ahead.</div>';
+    });
+    if(l.xid&&!sub)h+='<div><button type="button" class="ghostbtn" onclick="delExtra('+l.xid+')">Remove one-off</button></div>';
+    if(!l.xid&&!sub)h+='<div><button type="button" class="ghostbtn" onclick="toggleSkip('+l.e.id+')">'+(l.skipped?'Include in this run':'Skip this run')+'</button></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  if(!sub&&S.staff.length){h+='<details style="margin-top:12px"><summary>Add a one-off payment (bonus, invoice, reimbursement)</summary><form onsubmit="addExtra(event)" class="grid" style="margin-top:10px"><label>Person<select name="p">'+S.staff.map(function(e){return'<option value="'+e.id+'">'+esc(e.name)+'</option>'}).join('')+'</select></label><label>Amount<input type="number" name="a" min="1" step="any" required></label><label>Currency<select name="c"><option>MYR</option><option>SGD</option><option>USD</option><option>IDR</option><option>JPY</option></select></label><label>Type<select name="n"><option>Bonus</option><option>Contractor invoice</option><option>Reimbursement</option></select></label><button type="submit" class="ghostbtn">Add to this run</button></form></details>'}
+  h+='</section></div><aside class="side"><div class="ghost" aria-hidden="true">S</div><div class="fine" style="font-weight:600">You send</div><div><div class="big mono">'+num(t.need,ccyOf(S.fund))+'</div><div class="mono" style="font-weight:700">'+(isBank(S.fund)?ccyOf(S.fund)+' by bank transfer':S.fund)+'</div></div>';
+  h+='<div class="kv"><span>Payouts</span><span class="mono">'+num(t.pay,ccyOf(S.fund))+'</span></div><div class="kv"><span>Operator fee, '+feePct()+'%</span><span class="mono">'+num(t.fee,ccyOf(S.fund))+'</span></div><div class="kv"><span>Network fees (sample)</span><span class="mono">'+(S.settings.gasPayer==='employer'?num(t.gas,ccyOf(S.fund)):'paid by employees')+'</span></div><div class="kv"><span>Rate against reference</span><span>0.00% (sample)</span></div><div class="kv"><span>Swaps on Sera.cx</span><span>'+t.swaps+'</span></div><div class="kv"><span>To wallet / to bank</span><span>'+t.wallet+' / '+t.bank+'</span></div>';
+  if(t.skipped)h+='<div class="kv"><span>Held by screening</span><span>'+t.skipped+'</span></div>';
+  var two=S.settings.twoPerson;
+  if(two&&!sub){h+='<button type="button" class="cta" '+((t.ready&&S.actor==='preparer')?'':'disabled')+' onclick="submitRun()">Submit for approval</button>';if(S.actor!=='preparer')h+='<p class="fine">Switch to Preparer to submit this draft.</p>'}
+  else{h+='<button type="button" class="cta" '+((t.canSend&&(!two||S.actor==='approver'))?'':'disabled')+' onclick="openSign()">Review, sign and send</button>';if(two&&S.actor!=='approver')h+='<p class="fine">Switch to Approver to sign. The preparer cannot approve their own run.</p>';if(two)h+='<button type="button" class="ghostbtn" onclick="backToDraft()">Send back to draft</button>'}
+  if(t.issues)h+='<div class="err">Fix '+t.issues+' issue'+(t.issues>1?'s':'')+' in the list before this run can go.</div>';
+  else if(!t.fundOk)h+='<div class="err">Funding check has not passed yet.</div>';
+  return h+'<p class="fine">Every payout is screened before it leaves. Swaps settle on Sera.cx and funds never sit with the operator.</p></aside></div>';
+}
+function employerStaff(){
+  var h='<h1>Employees</h1><p class="sub">Everyone you pay, employees and contractors. Salary is set in their home currency.</p>';
+  h+='<details class="card pad" style="margin-top:20px"><summary>Bulk import from a pay file</summary><p class="fine">Columns: name, salary, currency, address (optional), type (optional). Demo rule: an address starting 0xdead or 0xbad is treated as flagged by screening.</p><textarea id="csv" aria-label="Pay file contents" placeholder="name,salary,currency,address,type"></textarea><div class="btns"><button type="button" class="ghostbtn" onclick="loadSample()">Load sample file</button><label class="ghostbtn" style="display:inline-flex;align-items:center;color:var(--ink);font-size:15px">Choose CSV file<input type="file" accept=".csv,text/csv,text/plain" onchange="readFile(this)" style="position:absolute;opacity:0;width:1px;height:1px"></label><button type="button" class="cta" onclick="doImport()">Import</button></div></details>';
+  if(S.importMsg)h+='<p class="sub" role="status">'+esc(S.importMsg)+'</p>';
+  var q=S.q.toLowerCase(),shown=S.staff.filter(function(e){return!q||e.name.toLowerCase().indexOf(q)>=0});
+  h+='<label style="margin-top:16px">Find a person ('+shown.length+' of '+S.staff.length+' shown)<input type="text" id="q" value="'+esc(S.q)+'" oninput="setQ(this.value)" placeholder="Type a name"></label><div class="card" style="margin-top:12px">';
+  if(!shown.length)h+='<div class="row"><span class="sub">Nobody matches.</span></div>';
+  shown.forEach(function(e){
+    h+='<div class="row"><div class="rowtop"><span class="name">'+esc(e.name)+' <span class="chip plain">'+e.type+'</span> <span class="chip'+(e.setup?'':' warn')+'">'+(e.setup?'Set up':'Not set up yet')+'</span></span><span class="mono" style="font-weight:700">'+fiat(e.amt,e.ccy)+'</span></div><div class="rowtop"><span class="fine">Receives '+(e.b?e.pct+'% '+optLabel(e.a)+' + '+(100-e.pct)+'% '+optLabel(e.b):'100% '+optLabel(e.a))+'</span><span class="btns"><button type="button" class="ghostbtn" onclick="invite('+e.id+')">Copy invite link</button><button type="button" class="ghostbtn" onclick="removeStaff('+e.id+')">Remove</button></span></div>';
+    h+='<div class="grid"><label>Monthly pay, '+e.ccy+'<input type="number" min="1" step="any" value="'+e.amt+'" onchange="setAmt('+e.id+',this.value)"></label><label>Type<select onchange="setType('+e.id+',this.value)"><option '+(e.type==='Employee'?'selected':'')+'>Employee</option><option '+(e.type==='Contractor'?'selected':'')+'>Contractor</option></select></label></div>';
+    h+='<div class="wal"><div class="rowtop"><span class="fine" style="font-weight:600">Wallet address, Ethereum</span><span>'+srcChip(e.w)+'</span></div>';
+    if(e.w.addr)h+='<div class="mono addr">'+e.w.addr+'</div>';
+    if(e.w.pending)h+='<div class="err">Employee asked to change to '+short(e.w.pending.addr)+'. Live after the 48 hour hold.</div><div class="btns"><button type="button" class="ghostbtn" onclick="approvePending('+e.id+')">Approve now</button><button type="button" class="ghostbtn" onclick="cancelPending('+e.id+')">Reject</button></div>';
+    if(!e.w.locked)h+='<form onsubmit="empSetAddr(event,'+e.id+')" class="btns"><input type="text" name="addr" aria-label="Wallet address for '+esc(e.name)+'" placeholder="0x address" required pattern="0x[0-9a-fA-F]{40}" title="0x followed by 40 hex characters" style="flex:1 1 220px"><button type="submit" class="ghostbtn">'+(e.w.addr?'Replace address':'Save address')+'</button></form>';
+    if(e.w.addr)h+='<div class="btns"><button type="button" class="ghostbtn" onclick="toggleLock('+e.id+')">'+(e.w.locked?'Unlock address':'Lock address')+'</button>'+((e.w.tested||flagged(e.w.addr))?'':'<button type="button" class="ghostbtn" onclick="testPay('+e.id+')">Send test payment</button>')+'</div>';
+    if(e.w.log.length)h+='<details><summary class="fine">History ('+e.w.log.length+')</summary>'+e.w.log.map(function(g){return'<div class="kv"><span>'+g.t+'</span><span>'+g.text+'</span></div>'}).join('')+'</details>';
+    h+='</div></div>';
+  });
+  h+='</div><form onsubmit="addStaff(event)" style="margin-top:22px"><h2>Add one person</h2><div class="grid"><label>Name<input type="text" name="n" required></label><label>Monthly pay<input type="number" name="a" min="1" step="any" required></label><label>Currency<select name="c"><option>MYR</option><option>SGD</option><option>USD</option><option>IDR</option><option>JPY</option></select></label><label>Type<select name="t"><option>Employee</option><option>Contractor</option></select></label><button type="submit" class="cta">Add</button></div></form>';
+  return h;
+}
+function employerHistory(){
+  if(S.openRun!==null&&S.history[S.openRun]){
+    var r=S.history[S.openRun];
+    return'<button type="button" class="ghostbtn" onclick="setTab(\'history\')">Back to all runs</button><h1 style="margin-top:16px">'+r.label+'</h1><p class="sub">Paid '+r.payday+'. '+money(r.need,r.fund)+' sent, '+r.n+' payouts, '+recStatus(r)+'.</p><p class="fine">'+r.by+'. Signed with '+r.sig+'.</p><div style="margin-top:18px">'+recordHtml(r,S.openRun)+'</div><h2 style="margin-top:22px">Accounting export</h2><p class="fine">One line per payout with the fiat value at the time of payment.</p><textarea readonly aria-label="Accounting export" style="margin-top:8px;min-height:160px">'+esc(csvFor(r))+'</textarea><div style="margin-top:8px"><button type="button" class="ghostbtn" onclick="copyCsv('+S.openRun+')">Copy export</button></div>';
+  }
+  var h='<h1>History</h1><p class="sub">Every run with its totals, rates and status.</p><div class="card" style="margin-top:20px">';
+  S.history.forEach(function(r,i){var st=recStatus(r);h+='<div class="row"><div class="rowtop"><span class="name">'+r.label+' <span class="chip'+(/failed/.test(st)?' warn':'')+'">'+st+'</span></span><span class="mono" style="font-weight:700">'+money(r.need,r.fund)+'</span></div><div class="rowtop"><span class="fine">Paid '+r.payday+', '+r.n+' payouts, '+r.swaps+' swaps on Sera.cx</span><button type="button" class="ghostbtn" onclick="openRunDetail('+i+')">Open</button></div></div>'});
+  return h+'</div>';
+}
+function employerOutbox(){
+  var h='<h1>Outbox</h1><p class="sub">Emails a fork would send. Nothing leaves this demo.</p><div class="card" style="margin-top:20px">';
+  if(!S.outbox.length)h+='<div class="row"><span class="sub">Nothing yet. Send a run, invite someone or request an address change.</span></div>';
+  S.outbox.forEach(function(m){h+='<div class="row"><div class="rowtop"><span class="name">'+esc(m.subject)+'</span><span class="fine">'+m.t+'</span></div><div class="fine">To: '+esc(m.to)+'</div></div>'});
+  return h+'</div>';
+}
+function employerSettings(){
+  var s=S.settings,h='<h1>Settings</h1><div class="card pad" style="margin-top:20px;gap:6px">';
+  h+='<label class="tog"><input type="checkbox" '+(s.twoPerson?'checked':'')+' onchange="setSetting(\'twoPerson\',this.checked)">Two-person approval: one prepares, another signs</label>';
+  h+='<label class="tog"><input type="checkbox" '+(s.multisig?'checked':'')+' onchange="setSetting(\'multisig\',this.checked)">Treasury is a multisig wallet, 2 of 3 signatures</label>';
+  h+='<label class="tog"><input type="checkbox" '+(s.requireTest?'checked':'')+' onchange="setSetting(\'requireTest\',this.checked)">Require a test payment before the first payout to a new address</label></div>';
+  h+='<div class="grid" style="margin-top:16px"><label>Pay schedule<select '+(S.run.status==='draft'?'':'disabled')+' onchange="setSetting(\'schedule\',this.value)">'+['Monthly on the 28th','Twice a month, 14th and 28th','Weekly on Friday'].map(function(o){return'<option '+(o===s.schedule?'selected':'')+'>'+o+'</option>'}).join('')+'</select></label><label>Network fees paid by<select onchange="setSetting(\'gasPayer\',this.value)"><option value="employer" '+(s.gasPayer==='employer'?'selected':'')+'>Employer</option><option value="employee" '+(s.gasPayer==='employee'?'selected':'')+'>Employee, deducted from payout</option></select></label></div>';
+  return h+'<p class="fine" style="margin-top:12px">The schedule sets the pay dates and how much of monthly pay each run carries. It can be changed while the current run is a draft. The operator fee and ramp partners are set by your payroll operator.</p>';
+}
+function employeeView(){
+  if(!S.staff.length)return'<p class="sub">No employees yet. Switch to Employer and add one.</p>';
+  var e=me(),h='<div class="phone"><label>Viewing as<select onchange="setViewer(this.value)">';
+  S.staff.forEach(function(x){h+='<option value="'+x.id+'" '+(x.id===e.id?'selected':'')+'>'+esc(x.name)+'</option>'});
+  h+='</select></label>';
+  var slips=[];S.history.forEach(function(r,ri){r.items.forEach(function(i,ii){if(i.staffId===e.id)slips.push([r,ri,i,ii])})});
+  if(slips.length){
+    var s=slips[0],r=s[0],i=s[2];
+    h+='<div class="side"><div class="ghost" aria-hidden="true">S</div><div class="rowtop"><span class="fine" style="font-weight:600">'+r.label+', '+esc(i.note.toLowerCase())+'</span><span class="chip paid">Payslip</span></div>';
+    i.legs.forEach(function(g){h+='<div><div class="big mono" style="font-size:26px">'+g.text+'</div><div class="fine">'+g.sub+'</div><div class="fine" style="font-weight:600;color:var(--ink)">'+(g.state==='done'?'Arrived':g.state==='run'?'On its way: '+g.stages[g.at]:g.state==='failed'?'Delayed. Your employer is retrying.':'On hold. Contact your employer.')+'</div></div>'});
+    h+='<div class="kv"><span>Gross</span><span class="mono">'+fiat(i.gross,i.ccy)+'</span></div>';
+    if(i.ded)h+='<div class="kv"><span>Statutory deductions</span><span class="mono">'+fiat(i.ded,i.ccy)+'</span></div>';
+    h+='<div class="kv"><span>Net</span><span class="mono">'+fiat(i.net,i.ccy)+'</span></div>';
+    i.legs.forEach(function(g){h+='<div class="kv"><span>Locked rate</span><span class="mono">'+g.rate+'</span></div><div class="kv"><span>Value when paid</span><span class="mono">US$ '+num(g.usd,'USD')+'</span></div>'});
+    h+='<button type="button" class="ghostbtn" onclick="copySlip('+s[1]+','+s[3]+')">Copy payslip</button>';
+    if(slips.length>1)h+='<details><summary class="fine">Earlier payslips ('+(slips.length-1)+')</summary>'+slips.slice(1).map(function(x){return'<div class="rowtop" style="margin-top:8px;align-items:center"><span class="fine">'+x[0].label+', '+esc(x[2].note.toLowerCase())+', '+fiat(x[2].net,x[2].ccy)+'</span><button type="button" class="ghostbtn" onclick="copySlip('+x[1]+','+x[3]+')">Copy</button></div>'}).join('')+'</details>';
+    h+='</div>';
+  }
+  h+='<div><h1 style="font-size:26px">How do you want to be paid?</h1><p class="sub">Your '+(e.type==='Contractor'?'fee':'salary')+' is '+fiat(e.amt,e.ccy)+' a month. Changes apply to the next run that has not been signed.</p></div><div style="display:flex;flex-direction:column;gap:8px">';
+  payOpts().forEach(function(o){var ok=!isBank(o)||S.ramps[ccyOf(o)].off,on=e.a===o;h+='<button type="button" class="opt" style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:64px'+(on?';background:var(--tint)':'')+'" aria-pressed="'+on+'" '+(ok?'':'disabled')+' onclick="pickA(\''+o+'\')"><span>'+optLabel(o)+'<small>'+(ok?optSub(o):'No off-ramp partner connected')+'</small></span><span class="mono" style="font-size:13px;font-weight:700;white-space:nowrap">'+money(conv(e.amt,e.ccy,ccyOf(o)),o)+'</span></button>'});
+  h+='</div>';
+  if((isBank(e.a)||(e.b&&isBank(e.b)))&&!e.kyc)h+='<div class="card pad"><h2 style="margin:0">Verify for bank payouts</h2><p class="fine">Bank payouts go through the off-ramp partner, who checks your identity and holds your bank details. This app never sees them.</p><button type="button" class="cta" onclick="doKyc()">Verify with [PARTNER NAME] (demo)</button></div>';
+  h+='<div class="card pad"><label class="tog"><input type="checkbox" '+(e.b?'checked':'')+' onchange="setSplit(this.checked)">Split my pay two ways</label>';
+  if(e.b){
+    h+='<label>Second payout<select onchange="setB(this.value)">';
+    payOpts().forEach(function(o){if(o!==e.a&&(!isBank(o)||S.ramps[ccyOf(o)].off))h+='<option value="'+o+'" '+(o===e.b?'selected':'')+'>'+optLabel(o)+'</option>'});
+    h+='</select></label><label>Share to '+optLabel(e.a)+': '+e.pct+'%<input type="range" min="10" max="90" step="5" value="'+e.pct+'" oninput="setPct(this.value)"></label>';
+    legsFor(e,e.amt,e.ccy).forEach(function(l){h+='<div class="kv"><span>'+l.pct+'% '+optLabel(l.o)+'</span><span class="mono">'+money(l.amt,l.o)+'</span></div>'});
+  }
+  h+='</div><div class="card pad"><div class="rowtop"><h2 style="margin:0">Your wallet address</h2><span>'+srcChip(e.w)+'</span></div>';
+  if(e.w.addr)h+='<div class="mono addr">'+e.w.addr+'</div><div class="fine">Ethereum. Stablecoin pay is sent here.</div>';
+  else h+='<div class="fine">Add one to receive stablecoins. Your employer can also enter it for you.</div>';
+  if(e.w.pending)h+='<div class="err">Change to '+short(e.w.pending.addr)+' requested. It goes live after a 48 hour hold and your employer has been emailed.</div><button type="button" class="ghostbtn" onclick="cancelPending('+e.id+')">Cancel change</button>';
+  if(e.w.locked)h+='<div class="fine" style="font-weight:600;color:var(--ink)">Locked by your employer. Ask them to unlock it before you change it.</div>';
+  else if(!e.w.pending)h+='<button type="button" class="cta" onclick="staffSign()">'+(e.w.addr?'Sign with a different wallet':'Connect wallet and sign')+'</button><p class="fine">Demo: no wallet opens. In a fork, the wallet signs a message to prove the address is theirs.</p><form onsubmit="staffPaste(event)" class="btns"><input type="text" name="addr" aria-label="Paste a wallet address" placeholder="Or paste a 0x address" required pattern="0x[0-9a-fA-F]{40}" title="0x followed by 40 hex characters" style="flex:1 1 200px"><button type="submit" class="ghostbtn">Save</button></form>';
+  return h+'</div><p class="fine" style="text-align:center">Amounts are estimates until your employer signs the run. Settlement by Sera.cx.</p></div>';
+}
+function operatorView(){
+  var h='';
+  if(S.tab==='clients'){
+    h='<h1>Clients</h1><p class="sub">One operator, many employers. Each has its own fee, roster, runs and treasury wallet. Pick one to work as that client.</p><div class="card" style="margin-top:20px">';
+    S.clients.forEach(function(c,i){h+='<div class="row"><div class="rowtop"><span class="name">'+esc(c.name)+(i===S.client?' <span class="chip paid">Active</span>':'')+'</span><span class="btns"><label style="flex-direction:row;align-items:center;gap:8px">Fee %<input type="number" min="0" step="0.05" value="'+c.fee+'" onchange="setFee('+i+',this.value)" style="width:90px"></label><button type="button" class="ghostbtn" '+(i===S.client?'disabled':'')+' onclick="pickClient('+i+')">Work as this client</button></span></div></div>'});
+    h+='</div>';
+  }else if(S.tab==='ramps'){
+    h='<h1>Ramp partners</h1><p class="sub">Your licensed partners per currency. Turn one off to see what breaks in the pay run.</p><div class="card" style="margin-top:20px">';
+    ['MYR','SGD','USD','IDR','JPY'].forEach(function(c){var r=S.ramps[c];h+='<div class="row"><div class="rowtop"><span class="name">'+c+' <span class="fine">'+RAIL[c]+', settles as '+LOCAL[c]+'</span></span><span class="fine">[PARTNER NAME]</span></div><div style="display:flex;flex-wrap:wrap;gap:6px 24px"><label class="tog"><input type="checkbox" '+(r.on?'checked':'')+' onchange="toggleRamp(\''+c+'\',\'on\',this.checked)">On-ramp, bank to stablecoin</label><label class="tog"><input type="checkbox" '+(r.off?'checked':'')+' onchange="toggleRamp(\''+c+'\',\'off\',this.checked)">Off-ramp, stablecoin to bank</label></div></div>'});
+    h+='</div><p class="fine" style="margin-top:10px">With no ramp connected, a currency still works wallet to wallet through its stablecoin.</p>';
+  }else if(S.tab==='plugins'){
+    h='<h1>Statutory plug-ins</h1><p class="sub">Country modules that turn gross into net for employees. Contractors are paid gross. The demo uses a flat '+(PLUGRATE*100)+'% sample deduction, which is not a real statutory rate.</p><div class="card pad" style="margin-top:20px;gap:6px">';
+    [['MYR','Malaysia'],['SGD','Singapore'],['IDR','Indonesia']].forEach(function(p){h+='<label class="tog"><input type="checkbox" '+(S.plugins[p[0]]?'checked':'')+' onchange="togglePlug(\''+p[0]+'\',this.checked)">'+p[1]+' plug-in for '+p[0]+' salaries</label>'});
+    h+='</div><p class="fine" style="margin-top:10px">Turn one on, then check the pay run and the payslip.</p>';
+  }else{
+    h='<h1>API and webhooks</h1><p class="sub">A sketch of what a fork could expose so this plugs into an existing payroll system. Nothing here is live.</p><pre class="code mono" style="margin-top:20px">POST /v1/employees/import      upload a pay file\nPOST /v1/runs                  create a draft run\nPOST /v1/runs/{id}/submit      preparer submits\nPOST /v1/runs/{id}/approve     approver signs and sends\nGET  /v1/runs/{id}/payouts     stage of every payout\nPOST /v1/payouts/{id}/retry    retry one failed payout\nGET  /v1/runs/{id}/export      accounting export\n\nWebhooks\nrun.submitted   run.sent\npayout.screened payout.swapped payout.sent\npayout.arrived  payout.failed  payout.held\naddress.change_requested   address.locked</pre>';
+  }
+  return h;
+}
+function signDialog(){
+  var t=totals(),ms=S.settings.multisig,ready=!ms||S.sigs>=2;
+  var h='<div class="ov" onkeydown="if(event.key===\'Escape\')cancelSign()"><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlh"><h2 id="dlh" style="margin:0;font-size:22px">Sign and send</h2><p class="sub" style="margin:0">Your wallet would open here and ask you to sign the pay run, then send the funds. Rates lock when you sign.</p><div class="kv"><span>You send</span><span class="mono">'+money(t.need,S.fund)+'</span></div><div class="kv"><span>Payouts</span><span>'+t.n+'</span></div><div class="kv"><span>Swaps on Sera.cx</span><span>'+t.swaps+'</span></div>';
+  if(t.skipped)h+='<div class="kv"><span>Held by screening</span><span>'+t.skipped+'</span></div>';
+  if(ms)h+='<div class="kv"><span>Multisig signatures</span><span>'+Math.min(S.sigs,2)+' of 2</span></div>'+(ready?'':'<button type="button" class="ghostbtn" id="doSign" onclick="addSig()">Sign as signer '+(S.sigs+1)+' (demo)</button>');
+  h+='<label class="tog"><input type="checkbox" onchange="setFail(this.checked)">Simulate one failed payout</label><p class="fine">Demo: no wallet opens and nothing is sent.</p><button type="button" class="cta" '+(ready?'id="doSign"':'disabled')+' onclick="confirmSend()">Sign and send</button><button type="button" class="ghostbtn" onclick="cancelSign()">Cancel</button></div></div>';
+  return h;
+}
+function tabsHtml(list){return'<div class="tabs" role="group" aria-label="Sections">'+list.map(function(t){return'<button type="button" aria-pressed="'+(S.tab===t[0])+'" onclick="setTab(\''+t[0]+'\')">'+t[1]+'</button>'}).join('')+'</div>'}
+function render(){
+  ['employer','employee','operator','notes'].forEach(function(v){document.getElementById('v'+v.charAt(0).toUpperCase()+v.slice(1)).setAttribute('aria-pressed',S.view===v)});
+  document.getElementById('clientName').textContent='Client: '+S.clients[S.client].name;
+  var h='';
+  if(S.view==='employer'){
+    h=tabsHtml([['run','Pay run'],['staff','Employees'],['history','History'+(S.history.length?' ('+S.history.length+')':'')],['outbox','Outbox'+(S.outbox.length?' ('+S.outbox.length+')':'')],['settings','Settings']]);
+    h+=S.tab==='run'?employerRun():S.tab==='staff'?employerStaff():S.tab==='history'?employerHistory():S.tab==='outbox'?employerOutbox():employerSettings();
+  }else if(S.view==='operator'){
+    h=tabsHtml([['clients','Clients'],['ramps','Ramp partners'],['plugins','Statutory plug-ins'],['api','API and webhooks']])+operatorView();
+  }else if(S.view==='notes'){h='<div class="notes">'+document.getElementById('build-notes').innerHTML+'</div>';
+  }else h=employeeView();
+  if(S.signing)h+=signDialog();
+  var keep=document.activeElement&&document.activeElement.type==='range',qf=document.activeElement&&document.activeElement.id==='q';
+  document.getElementById('app').innerHTML=h;
+  if(S.signing){var b=document.getElementById('doSign');if(b&&b.focus)b.focus()}
+  if(keep){var r=document.querySelector('input[type=range]');if(r)r.focus()}
+  if(qf){var qi=document.getElementById('q');if(qi&&qi.focus){qi.focus();try{qi.setSelectionRange(qi.value.length,qi.value.length)}catch(x){}}}
+}
+/* seed one past run so History is not empty */
+(function(){var keepStaff=S.staff;S.staff=keepStaff.filter(function(e){return e.id!==5});var r=buildRecord(0,true);r.label='October 2026';r.payday='28 Oct 2026';r.sent='28 Oct';S.history.push(r);S.staff=keepStaff;
+  function cd(staff,bal,fund){return{staff:staff,run:{idx:0,status:'draft',extras:[],skip:[],funded:false,rec:null},history:[],outbox:[],bal:bal,settings:{twoPerson:false,multisig:false,schedule:'Monthly on the 28th',gasPayer:'employer',requireTest:false},fund:fund,viewer:staff[0].id,actor:'preparer'}}
+  S.clients[1].data=cd([P(101,'Chen Li Ting','Employee',7800,'SGD','XSGD',null,100,W('0x5d3E1f9A7c4B2086e1D4a7C0b3F6e9D2c5A8b1E4','employee',false),true,true),P(102,'Arif Hidayat','Contractor',25000000,'IDR','USDT',null,100,W('0x8a6C4e2F0b9D7135c3E5a7F9b1D3c5E7a9F1b3D5','employee',false),false,true),P(103,'Grace Tan','Employee',5400,'SGD','bank:SGD',null,100,W('','',false),true,true)],{USDT:30000,USDC:15000,MYRT:0,XSGD:20000},'XSGD');
+  S.clients[2].data=cd([P(201,'Farah Iskandar','Employee',9200,'MYR','bank:MYR',null,100,W('','',false),true,true),P(202,'Hiroshi Tanaka','Contractor',600000,'JPY','JPYC',null,100,W('0x2f4A6c8E0b1D3f5A7c9E1b3D5f7A9c1E3b5D7f9A','employer',false),false,true)],{USDT:50000,USDC:40000,MYRT:0,XSGD:0},'USDC');
+  S.nextId=300})();
+var INITIAL=JSON.stringify(S);
+render();
+</script>
+</body>
+</html>

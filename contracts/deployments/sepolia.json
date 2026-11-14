@@ -1,0 +1,13 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": null,
+  "deployer": null,
+  "PayrollDisburser": null,
+  "PayslipRegistry": null,
+  "TestStablecoin": {
+    "tUSDT": null,
+    "tMYRT": null
+  },
+  "notes": "Filled by script/Deploy.s.sol. Sera.cx testnet stablecoins (preferred for the demo so swaps work) are listed in packages/chain/src/sera.ts; read GET https://api-testnet.sera.cx/api/v1/tokens for the authoritative list."
+}

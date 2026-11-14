@@ -1,0 +1,13 @@
+{
+  "name": "@sera-payroll/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Foundry contracts for Sera.cx Payroll: PayrollDisburser, PayslipRegistry, TestStablecoin.",
+  "license": "MIT",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "lint": "forge fmt --check",
+    "typecheck": "forge build"
+  }
+}

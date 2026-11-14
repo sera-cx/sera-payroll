@@ -1,0 +1,39 @@
+{
+  "name": "@sera-payroll/api",
+  "version": "0.1.0",
+  "description": "HTTP API, payout worker and adapters for Sera.cx Payroll.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "DEMO_MODE=true tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "worker": "tsx src/worker-cli.ts",
+    "demo": "DEMO_MODE=true SEED_ON_START=true tsx src/server.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.1",
+    "@fastify/cors": "^10.0.1",
+    "@sera-payroll/core": "workspace:*",
+    "@sera-payroll/db": "workspace:*",
+    "drizzle-orm": "^0.38.4",
+    "fastify": "^5.1.0",
+    "nodemailer": "^6.9.16",
+    "pdfkit": "^0.15.1",
+    "viem": "^2.21.54",
+    "zod": "^3.23.8",
+    "@sera-payroll/chain": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pdfkit": "^0.13.8",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

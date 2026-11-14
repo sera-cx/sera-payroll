@@ -11,3 +11,4 @@ cache
 broadcast
 .pglite
 apps/web/public/build-notes.html
+.claude/settings.local.json

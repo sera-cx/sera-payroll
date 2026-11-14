@@ -1,0 +1,15 @@
+{
+  "description": "Payslip Merkle vector shared by contracts/test/PayslipRegistry.t.sol and packages/chain/test/vector.test.ts. Produced with @sera-payroll/core sealPayslip using salts keccak256(toHex('vector-salt-' + i)).",
+  "root": "0x6a6943e272b7e38bc6f1ee5c59a7528224b446abceb06e05e4f3c69bbb9e5080",
+  "docHash": "0x35e8d0ff0e52ced59804de88a2ec336b2bc6aaa70a6ad7adbaa85de773db938a",
+  "leafCount": 20,
+  "field": { "name": "net", "value": "8500.00", "salt": "0x922d46ffd89f0bcd18beaf805dfa7c046d6bcdff28d5ddeb305c6601be66b002" },
+  "leafHash": "0xb04b7c946fe4dc98e4c1201c387942af6aec6616ce4ef297070b80a7c16522dd",
+  "proof": [
+    "0x026f1153e0eefa65d04ed070c79ec37a3ffa3ff239996710f4d9d2ff00463312",
+    "0x5de456cd0f760a650a9e6d94629b48463011e3b6e6d6accc1eb6c8badefdbc5a",
+    "0xf35aacaed5ad9de07e9d7d802812650d45f2fcbf13390aef08c0550282fbfe3d",
+    "0xb40af9a38324cb47baf5706104147ccf5976c5796d42046183d849d6c52156fe",
+    "0xa22db4b8b9152c49ffd055c703f50b504243efdf4800ad4815e5ba51d60374b4"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@sera-payroll/api",
+        "demo"
+      ],
+      "port": 4000
+    },
+    {
+      "name": "web-mock",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@sera-payroll/web",
+        "exec",
+        "vite",
+        "--port",
+        "5173"
+      ],
+      "port": 5173,
+      "env": {
+        "VITE_MOCK_API": "1"
+      }
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@sera-payroll/web",
+        "dev"
+      ],
+      "port": 5173
+    }
+  ]
+}

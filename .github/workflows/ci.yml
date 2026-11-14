@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  node:
+    name: Typecheck, build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm test
+
+  contracts:
+    name: Foundry build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Check for contracts
+        id: check
+        run: |
+          if [ -d contracts ] && [ -f contracts/foundry.toml ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: foundry-rs/foundry-toolchain@v1
+        if: steps.check.outputs.present == 'true'
+        with:
+          version: stable
+      - name: forge build
+        if: steps.check.outputs.present == 'true'
+        working-directory: contracts
+        run: forge build
+      - name: forge test
+        if: steps.check.outputs.present == 'true'
+        working-directory: contracts
+        run: forge test -vv

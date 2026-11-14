@@ -141,6 +141,14 @@ export const PAYRUN_APPROVAL_TYPES = {
   ],
 } as const;
 
+/**
+ * The EIP-712 domain PayslipRegistry.sol verifies payslip signatures against.
+ * Must match the contract's constructor exactly: name "Sera.cx Payroll Payslips", version "1".
+ */
+export function payslipRegistryDomain(chainId: number, registry: Address) {
+  return { name: 'Sera.cx Payroll Payslips', version: '1', chainId, verifyingContract: registry } as const;
+}
+
 export function payrollDomain(chainId: number, verifyingContract: Address, brand: string) {
   return { name: `${brand} Payroll`, version: '1', chainId, verifyingContract } as const;
 }

@@ -13,12 +13,12 @@ Errors: `{ "error": { "code": "snake_case", "message": "Plain English" } }` with
 
 ```
 POST /auth/demo            { userId }                      demo mode only (DEMO_MODE=true). Sets the session. 404 otherwise.
-GET  /auth/demo/users                                      demo mode only: [{ id, name, email, role, clientId, operatorId, personId }]
+GET  /auth/demo/users                                      demo mode only: [{ id, name, email, role, clientId, clientName, operatorId, personId }]
 POST /auth/magic-link      { email }                       sends a sign-in link through the Notifier. Always 204.
 GET  /auth/callback?token=                                 sets the session, redirects to WEB_ORIGIN.
 GET  /auth/siwe/nonce                                      { nonce }
 POST /auth/siwe            { message, signature }          sign-in with Ethereum for approvers whose wallet is registered. Sets session.
-GET  /auth/me                                              { user: { id, name, email, role, clientId, operatorId, personId }, demoMode, network: { name, chainId, explorer } }
+GET  /auth/me                                              { user: { id, name, email, role, clientId, operatorId, personId } | null, demoMode, network: { name, chainId, explorer }, brand }   200 even when signed out
 POST /auth/logout                                          204
 ```
 
@@ -74,7 +74,8 @@ POST /clients/:clientId/people/:id/address/approve          approve pending earl
 POST /clients/:clientId/people/:id/address/reject           → Person
 POST /clients/:clientId/people/:id/address/test-payment     sends/marks a test payment (demo: marks). → Person
 
-GET  /clients/:clientId/runs/current                        RunView (creates the draft if none)
+GET  /clients/:clientId/runs/current                        RunView: the open draft or submitted run; else the last sent run (status sent/complete, so the tab keeps showing its tracking); else creates the first draft
+POST /clients/:clientId/runs/current/next                   drafts the next run after a sent one (no-op when a draft is already open) → RunView
 PATCH /clients/:clientId/runs/current                       { fundingSource?, funded? } → RunView. 409 run_not_draft.
 POST /clients/:clientId/runs/current/one-offs               { personId, amount, currency, kind } → RunView
 DELETE /clients/:clientId/runs/current/one-offs/:oneOffId   → RunView
@@ -154,3 +155,27 @@ GET  /v1/runs/{id}/export   → GET  /clients/:clientId/runs/:runId/export
 After approve, one job per payout, in order: screen (ScreeningProvider; flagged → state held, event payout.held) → swap on Sera.cx when needsSwap (SwapProvider.settle, store txHash, event payout.swapped) → send to wallet (ChainAdapter.disburse batched per run, event payout.sent) or send to off-ramp partner (RampAdapter.createBankPayout, then poll getPayoutStatus → arrived). Any error → failed with reason; retry restarts from the first incomplete stage using the same idempotency key per payoutId so nothing pays twice. In demo mode the mock adapters advance each stage roughly every second so the UI shows movement, and `simulateFailure` fails the first payout once.
 
 When a payout reaches its final stage the item's payslip is sealed (core `sealPayslip`), signed by the server's operator key (EIP-712 `Payslip`), anchored through `ChainAdapter.anchorPayslip`, and `payslip.anchored` is emitted.
+
+## Non-custodial settlement on a real chain (CHAIN=sepolia, SWAP_PROVIDER=sera)
+
+Funds never sit with the operator. The treasury wallet signs everything in the browser; the API prepares, records and polls.
+
+1. `POST /clients/:clientId/runs/:runId/approve` verifies the approval signature and snapshots the run as above, then returns the record with a `chainPlan`:
+   ```
+   chainPlan: {
+     swaps: [{ payoutId, quote: { uuid, routeParams, domain, types, permit, expiresAt, amountOut } } | { payoutId, error }],
+     directPayouts: [{ payoutId, stablecoin, to, amount }],   // no swap needed: paid by PayrollDisburser
+     disburse: { to, data, value } | null                       // calldata when the chain package can encode it
+   }
+   ```
+   `routeParams` is Sera.cx's `route_params`, returned unchanged. `domain` is `{ name: 'Sera', version: '1', chainId, verifyingContract: sera_address }` from `GET /config`. A rate from `/swap/quote` lives about 30 seconds, so the web app signs at once.
+2. For each swap the wallet signs `Intent` (`types`, `routeParams`) and, when `permit` is present, the permit's `eip712` typed data, then calls
+   `POST /clients/:clientId/runs/:runId/swaps/:payoutId/submit { signature, permitSignature?, permitDeadline? }`. The API posts to Sera.cx `POST /swap`, stores `trade_id`, and the worker polls `GET /orders/{trade_id}` (API key) until `settled` or `failed`. A second submit for the same payout returns the stored trade id.
+3. For direct stablecoin payouts the wallet sends the `disburse` transaction to PayrollDisburser and calls `POST /clients/:clientId/runs/:runId/disburse { txHash }`. The worker waits for the receipt and advances every wallet payout in the run.
+4. Bank payouts: the swapped stablecoin goes to the off-ramp partner's deposit address (the partner adapter supplies it); the worker creates the bank payout with the partner using the payout id as the idempotency key and polls until arrived.
+
+Stale rate: Sera.cx answers `409 QUOTE_STALE`; approve again to get fresh rates (the approval signature binds to rates, so a re-sign is required). `410` means consumed or expired. In DEMO_MODE with `CHAIN=mock` and `SWAP_PROVIDER=sample`, the worker simulates all of this one stage per tick.
+
+## Rates
+
+The run view's `rates` table (units per USD) is the sample table unless a rate source is configured. With SWAP_PROVIDER=sera the executable rate comes from `/swap/quote` per payout at approval time and is what settles; the displayed table is for review. Rates are written to the run at submit (`ratesAsOf`) and frozen into every payout's `lockedRate` at approval.

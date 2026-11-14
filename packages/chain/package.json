@@ -1,0 +1,26 @@
+{
+  "name": "@sera-payroll/chain",
+  "version": "0.1.0",
+  "description": "ChainAdapter for Sera.cx Payroll: PayrollDisburser and PayslipRegistry bindings, Sera.cx network constants, viem helpers.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "abis": "node scripts/gen-abis.mjs"
+  },
+  "dependencies": {
+    "@sera-payroll/core": "workspace:*",
+    "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
