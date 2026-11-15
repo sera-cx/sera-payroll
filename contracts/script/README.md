@@ -23,10 +23,10 @@ DEPLOY_TEST_TOKENS=true      # set false to skip the demo stablecoins
 cd contracts
 forge build
 forge test
-forge script script/Deploy.s.sol:Deploy --rpc-url sepolia --broadcast --verify -vvvv
+forge script script/Deploy.s.sol:Deploy --rpc-url sepolia --broadcast --skip-simulation --slow -vv
 ```
 
-The script prints the addresses and writes `deployments/11155111.json`. Copy the addresses into the API's env:
+`--skip-simulation` matters: current Sepolia charges several times Foundry's cancun estimate for contract creation, so without it the first transaction runs out of gas. The script prints the addresses and writes `deployments/11155111.json`; copy it to `deployments/sepolia.json`. The current Sepolia deployment is recorded there and in `docs/DEPLOY.md`. Copy the addresses into the API's env:
 
 ```
 CHAIN=sepolia

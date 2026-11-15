@@ -5,7 +5,7 @@ Three things can be deployed, independently:
 | Piece | What it is | Where the reference deployment lives |
 |---|---|---|
 | **Public demo** | The web app built in mock mode. The whole product runs in the visitor's browser on sample data. No server. | GitHub Pages: https://sera-cx.github.io/sera-payroll/ |
-| **Contracts** | `PayrollDisburser`, `PayslipRegistry` and two demo stablecoins on Sepolia. | `contracts/deployments/sepolia.json` once deployed |
+| **Contracts** | `PayrollDisburser`, `PayslipRegistry` and two demo stablecoins on Sepolia. | Deployed. Addresses in `contracts/deployments/sepolia.json` and below. |
 | **Full stack** | The API with Postgres, the payout worker, webhooks, PDF payslips and real wallet signing, plus the web app pointed at it. | Any Docker host. Fly.io and Render configs are in `deploy/`. |
 
 Nothing on the public demo moves real money. Keep every hosted demo on a testnet; the build notes explain why.
@@ -52,13 +52,28 @@ VITE_BASE=/sera-payroll/ pnpm preview:static     # http://localhost:4173/sera-pa
 
 Three contracts, all permissionless and holding no funds. Details in [`contracts/script/README.md`](../contracts/script/README.md).
 
+### Deployed addresses (Sepolia, chain id 11155111)
+
+| Contract | Address |
+|---|---|
+| PayrollDisburser | [`0x874DE1F483Dd5C053E51cf9e9dAc161452050b85`](https://sepolia.etherscan.io/address/0x874DE1F483Dd5C053E51cf9e9dAc161452050b85) |
+| PayslipRegistry | [`0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D`](https://sepolia.etherscan.io/address/0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D) |
+| TestStablecoin tUSDT (6 dp, faucet) | [`0x608007F91A38D43E964939C2F29c4397349F71AC`](https://sepolia.etherscan.io/address/0x608007F91A38D43E964939C2F29c4397349F71AC) |
+| TestStablecoin tMYRT (6 dp, faucet) | [`0xCc0054146fBE0105655633ce4ebb2930acc3FFC1`](https://sepolia.etherscan.io/address/0xCc0054146fBE0105655633ce4ebb2930acc3FFC1) |
+
+Deployed on 15 November 2026 by `0xeB17b3F4ea77178Dc6ad94f026CF76D790868154`, a throwaway key that only ever held testnet ETH. Sources are verified on Sourcify (exact match) and show on Etherscan through it.
+
+### Gas on current Sepolia
+
+Sepolia prices contract creation far above what Foundry's local simulation assumes (the node estimated 4.2M gas for `PayrollDisburser` where the cancun simulation used 615k), so a plain `forge script --broadcast` sends too little gas and the first transaction runs out. Pass `--skip-simulation` so Foundry takes the gas estimate from the node, as the commands below do. Public RPC pools can also disagree about the head block during simulation; `https://sepolia.gateway.tenderly.co` was consistent.
+
 ### From your machine
 
 ```bash
 cd contracts
 cp .env.example .env    # or create it: PRIVATE_KEY, SEPOLIA_RPC_URL, DEPLOY_TEST_TOKENS
 forge build && forge test
-forge script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL" --broadcast -vv
+forge script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL" --broadcast --skip-simulation --slow -vv
 cp deployments/11155111.json deployments/sepolia.json
 ```
 
@@ -76,10 +91,10 @@ Put the addresses in the API environment:
 
 ```
 CHAIN=sepolia
-RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
-PAYROLL_DISBURSER_ADDRESS=0x...
-PAYSLIP_REGISTRY_ADDRESS=0x...
-OPERATOR_SIGNER_PRIVATE_KEY=0x...   # signs payslip roots and relays anchors; also a throwaway on testnet
+RPC_URL=https://sepolia.gateway.tenderly.co
+PAYROLL_DISBURSER_ADDRESS=0x874DE1F483Dd5C053E51cf9e9dAc161452050b85
+PAYSLIP_REGISTRY_ADDRESS=0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D
+OPERATOR_SIGNER_PRIVATE_KEY=0x...   # signs payslip roots and relays anchors; needs a little Sepolia ETH for gas
 ```
 
 The web app needs `VITE_CHAIN_ID=11155111`. Treasury wallets must `approve(PAYROLL_DISBURSER_ADDRESS, amount)` on each stablecoin they pay with; the web app offers that step before signing.
@@ -137,5 +152,6 @@ Serve `dist/` from any static host with `404.html` as the fallback for unknown p
 ## What the reference deployment covers and does not
 
 - The GitHub Pages demo is live and rebuilds on push.
-- The contracts and the full stack are ready to deploy but need a funded Sepolia key and a hosting account. The steps above are exact; nothing else is missing.
+- The contracts are deployed on Sepolia (addresses above).
+- The full stack is ready to deploy but needs a hosting account for the API and Postgres. The steps above are exact; nothing else is missing.
 - A real Sera.cx testnet run also needs an API key from Sera.cx to poll settlement status.

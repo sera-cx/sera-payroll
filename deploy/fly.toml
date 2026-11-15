@@ -1,7 +1,7 @@
 # Fly.io app for the API. From the repository root:
 #   fly launch --no-deploy --copy-config --config deploy/fly.toml --name <your-app>
 #   fly postgres create --name <your-app>-db && fly postgres attach <your-app>-db --app <your-app>
-#   fly secrets set SESSION_SECRET=... OPERATOR_SIGNER_PRIVATE_KEY=0x... RPC_URL=https://... PAYROLL_DISBURSER_ADDRESS=0x... PAYSLIP_REGISTRY_ADDRESS=0x...
+#   fly secrets set SESSION_SECRET=... OPERATOR_SIGNER_PRIVATE_KEY=0x... RPC_URL=https://sepolia.gateway.tenderly.co PAYROLL_DISBURSER_ADDRESS=0x874DE1F483Dd5C053E51cf9e9dAc161452050b85 PAYSLIP_REGISTRY_ADDRESS=0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D
 #   fly deploy --config deploy/fly.toml --dockerfile apps/api/Dockerfile
 # Then build the web app with VITE_API_BASE=https://<your-app>.fly.dev and host it anywhere static.
 app = "sera-payroll-api"

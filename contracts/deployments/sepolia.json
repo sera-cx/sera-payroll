@@ -1,13 +1,14 @@
 {
   "network": "sepolia",
   "chainId": 11155111,
-  "deployedAt": null,
-  "deployer": null,
-  "PayrollDisburser": null,
-  "PayslipRegistry": null,
+  "deployedAt": 1794748956,
+  "deployer": "0xeB17b3F4ea77178Dc6ad94f026CF76D790868154",
+  "PayrollDisburser": "0x874DE1F483Dd5C053E51cf9e9dAc161452050b85",
+  "PayslipRegistry": "0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D",
   "TestStablecoin": {
-    "tUSDT": null,
-    "tMYRT": null
+    "tMYRT": "0xCc0054146fBE0105655633ce4ebb2930acc3FFC1",
+    "tUSDT": "0x608007F91A38D43E964939C2F29c4397349F71AC"
   },
-  "notes": "Filled by script/Deploy.s.sol. Sera.cx testnet stablecoins (preferred for the demo so swaps work) are listed in packages/chain/src/sera.ts; read GET https://api-testnet.sera.cx/api/v1/tokens for the authoritative list."
+  "explorer": "https://sepolia.etherscan.io",
+  "notes": "Deployed 15 Nov 2026 with script/Deploy.s.sol (solc 0.8.26, optimizer 2000 runs). Sources verified on Sourcify (exact match). The demo stablecoins are faucets for testing only. Sera.cx testnet stablecoins (preferred for swaps) are listed in packages/chain/src/sera.ts; GET https://api-testnet.sera.cx/api/v1/tokens is authoritative."
 }

@@ -44,7 +44,7 @@ jobs:
         run: |
           test -n "$PRIVATE_KEY" || { echo "DEPLOYER_PRIVATE_KEY secret is not set"; exit 1; }
           test -n "$SEPOLIA_RPC_URL" || { echo "SEPOLIA_RPC_URL secret is not set"; exit 1; }
-          forge script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL" --broadcast ${{ inputs.verify && '--verify' || '' }} -vv
+          forge script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL" --broadcast --skip-simulation --slow ${{ inputs.verify && '--verify' || '' }} -vv
           cp deployments/11155111.json deployments/sepolia.json
           cat deployments/sepolia.json
       - uses: peter-evans/create-pull-request@v7

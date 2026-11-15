@@ -1,0 +1,12 @@
+{
+  "PayrollDisburser": "0x874DE1F483Dd5C053E51cf9e9dAc161452050b85",
+  "PayslipRegistry": "0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D",
+  "TestStablecoin": {
+    "tMYRT": "0xCc0054146fBE0105655633ce4ebb2930acc3FFC1",
+    "tUSDT": "0x608007F91A38D43E964939C2F29c4397349F71AC"
+  },
+  "chainId": 11155111,
+  "deployedAt": 1794748956,
+  "deployer": "0xeB17b3F4ea77178Dc6ad94f026CF76D790868154",
+  "network": "sepolia"
+}

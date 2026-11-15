@@ -4,7 +4,7 @@ Open-source stablecoin payroll. Employers fund a pay run in any supported stable
 
 **Settlement by Sera.cx.** Sera.cx does not run payroll for anyone. Payroll companies and other operators fork this repository and run it under their own brand and licence, in the same way as the Sera.cx open-source payment gateway.
 
-**Live demo: https://sera-cx.github.io/sera-payroll/** Every screen, running entirely in your browser on sample data. Open any screen and it signs you in as the right sample user.
+**Live demo: https://sera-cx.github.io/sera-payroll/** Every screen, running entirely in your browser on sample data. Open any screen and it signs you in as the right sample user. The contracts are deployed on Sepolia: PayrollDisburser `0x874DE1F483Dd5C053E51cf9e9dAc161452050b85`, PayslipRegistry `0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D` (full list in [docs/DEPLOY.md](docs/DEPLOY.md)).
 
 > **Demo only.** The hosted demo runs on a testnet with test stablecoins and sample data. Nothing on it is real and no salary moves. See [Risks](#risks-to-keep-visible).
 

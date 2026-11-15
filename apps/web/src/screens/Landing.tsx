@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FAQ, REPO, ROUTES, SITE_NAME, type Group } from '../seo';
+import { SEPOLIA_CONTRACTS as C } from '../contracts';
 
 const GROUPS: Group[] = ['Employer', 'Employee', 'Operator', 'Start here'];
 
@@ -79,6 +80,21 @@ export function Landing() {
         <p className="fine"><a href={`${REPO}/blob/main/docs/ON_CHAIN_PAYSLIP.md`} target="_blank" rel="noreferrer">Read the on-chain payslip design</a></p>
       </section>
 
+      <section aria-labelledby="h-contracts">
+        <h2 id="h-contracts">Contracts on Sepolia</h2>
+        <p>The settlement and payslip contracts are deployed on the Sepolia testnet. They are permissionless and hold no funds. A payroll operator running the server build points the API at them; the browser demo on this site plays settlement back instead.</p>
+        <table className="vt">
+          <thead><tr><th>Contract</th><th>Purpose</th><th>Address</th></tr></thead>
+          <tbody>
+            <tr><td>PayrollDisburser</td><td>Batched payouts from the treasury wallet, never the same payout twice</td><td><a className="mono addr" href={`${C.explorer}/address/${C.PayrollDisburser}`} target="_blank" rel="noreferrer">{C.PayrollDisburser}</a></td></tr>
+            <tr><td>PayslipRegistry</td><td>Anchors each payslip's salted Merkle root, signed by the employer</td><td><a className="mono addr" href={`${C.explorer}/address/${C.PayslipRegistry}`} target="_blank" rel="noreferrer">{C.PayslipRegistry}</a></td></tr>
+            <tr><td>tUSDT</td><td>Demo stablecoin with a faucet, 6 decimals</td><td><a className="mono addr" href={`${C.explorer}/address/${C.tUSDT}`} target="_blank" rel="noreferrer">{C.tUSDT}</a></td></tr>
+            <tr><td>tMYRT</td><td>Demo stablecoin with a faucet, 6 decimals</td><td><a className="mono addr" href={`${C.explorer}/address/${C.tMYRT}`} target="_blank" rel="noreferrer">{C.tMYRT}</a></td></tr>
+          </tbody>
+        </table>
+        <p className="fine"><a href={`${REPO}/blob/main/contracts`} target="_blank" rel="noreferrer">Contract sources and tests</a> · <a href={`${REPO}/blob/main/docs/DEPLOY.md`} target="_blank" rel="noreferrer">How to deploy your own</a></p>
+      </section>
+
       <section aria-labelledby="h-real">
         <h2 id="h-real">What is real here and what is simulated</h2>
         <div className="cards two">
@@ -97,7 +113,7 @@ export function Landing() {
             <ul className="intro-list">
               <li>The API runs inside your browser on sample data; a refresh keeps it, a reset clears it</li>
               <li>Swaps, screening, emails, bank transfers and identity checks are played back, not performed</li>
-              <li>Transaction hashes and anchors are sample values until the contracts are deployed and the server build is connected</li>
+              <li>Transaction hashes and anchors are sample values; the server build writes real ones through the Sepolia contracts below</li>
               <li>No salary, stablecoin or fiat moves anywhere</li>
             </ul>
           </div>
