@@ -36,6 +36,12 @@ export const ROUTES: RouteMeta[] = [
     points: [],
   },
   {
+    path: '/run-your-own', title: 'Run your own', group: 'Start here', index: true,
+    heading: 'Run your own payroll on this code',
+    description: 'How a developer or payroll operator runs Sera.cx Payroll locally in three commands, deploys the server build with Docker or one click on Render, points it at the Sepolia contracts, and what a fork must add before paying anyone for real.',
+    points: ['Local demo in three commands, no database or wallet', 'Docker image, Render blueprint and Fly config for the API', 'The environment variables that matter and the deployed contract addresses', 'The seven things a fork adds before going live'],
+  },
+  {
     path: '/verify', title: 'Verify a payslip proof', group: 'Start here', index: true,
     heading: 'Verify a payslip proof',
     description: 'Check a selective-disclosure payslip proof against its Merkle root and the on-chain PayslipRegistry record, without seeing the rest of the payslip.',

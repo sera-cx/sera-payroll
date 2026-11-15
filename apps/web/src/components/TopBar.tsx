@@ -20,6 +20,7 @@ export function TopBar({ brand, clientName }: { brand: string; clientName: strin
         {views.map(([to, label]) => (
           <NavLink key={to} to={to}>{({ isActive }) => <button type="button" aria-pressed={isActive}>{label}</button>}</NavLink>
         ))}
+        <NavLink to="/run-your-own">{({ isActive }) => <button type="button" aria-pressed={isActive}>Run your own</button>}</NavLink>
         <NavLink to="/verify">{({ isActive }) => <button type="button" aria-pressed={isActive}>Verify a payslip</button>}</NavLink>
         <NavLink to="/build-notes">{({ isActive }) => <button type="button" aria-pressed={isActive}>Build notes</button>}</NavLink>
       </nav>

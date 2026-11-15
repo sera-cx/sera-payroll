@@ -19,9 +19,10 @@ export function Landing() {
         <div className="btns">
           <Link className="cta" to="/employer/run">Try the employer demo</Link>
           <Link className="ghostbtn" to="/employee">See the employee view</Link>
+          <Link className="ghostbtn" to="/run-your-own">Run your own</Link>
           <a className="ghostbtn" href={REPO} target="_blank" rel="noreferrer">View on GitHub</a>
         </div>
-        <p className="fine">Nothing on this site is real. The whole product runs in your browser on sample data, so you can click every button.</p>
+        <p className="fine">This demo is static: the whole product runs in your browser on sample data, so you can click every button and nothing is real. Developers deploy their own copy with the server build.</p>
       </section>
 
       <section aria-labelledby="h-how">
@@ -128,7 +129,7 @@ cd sera-payroll
 pnpm install
 pnpm demo        # API in demo mode with sample data
 pnpm --filter @sera-payroll/web dev`}</pre>
-        <p className="fine">The README lists what a fork must add before paying anyone for real: a database, email, ramp partners, statutory plug-ins, screening and a funded treasury.</p>
+        <p className="fine"><Link to="/run-your-own">Run your own</Link> has the short version of the notes: local demo, Docker image, one-click Render deploy, the Sepolia contracts and what a fork must add before paying anyone for real.</p>
       </section>
 
       <section className="faq" aria-labelledby="h-faq">

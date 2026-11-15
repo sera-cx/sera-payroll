@@ -12,6 +12,7 @@ import { Landing } from './screens/Landing';
 import { BuildNotes } from './screens/BuildNotes';
 import { VerifyIntro } from './screens/VerifyIntro';
 import { ScreenIntro } from './screens/ScreenIntro';
+import { RunYourOwn } from './screens/RunYourOwn';
 
 export { ROUTES, headModel, metaFor, SITE_URL, canonicalUrl } from './seo';
 
@@ -19,6 +20,7 @@ function Content({ meta }: { meta: RouteMeta }) {
   switch (meta.path) {
     case '/': return <Landing />;
     case '/build-notes': return <BuildNotes />;
+    case '/run-your-own': return <RunYourOwn />;
     case '/verify': return <div className="notes"><VerifyIntro /><p className="fine">The verifier runs in your browser. Enable JavaScript to paste a proof.</p></div>;
     default: return <ScreenIntro meta={meta} />;
   }
@@ -34,6 +36,7 @@ function StaticPage({ meta }: { meta: RouteMeta }) {
           <Link to="/employer/run" aria-current={meta.group === 'Employer' ? 'page' : undefined}>Employer</Link>
           <Link to="/employee" aria-current={meta.group === 'Employee' ? 'page' : undefined}>Employee</Link>
           <Link to="/operator/clients" aria-current={meta.group === 'Operator' ? 'page' : undefined}>Operator</Link>
+          <Link to="/run-your-own" aria-current={meta.path === '/run-your-own' ? 'page' : undefined}>Run your own</Link>
           <Link to="/verify" aria-current={meta.path === '/verify' ? 'page' : undefined}>Verify a payslip</Link>
           <Link to="/build-notes" aria-current={meta.path === '/build-notes' ? 'page' : undefined}>Build notes</Link>
         </nav>

@@ -1,5 +1,7 @@
 # Deploying Sera.cx Payroll
 
+The hosted demo is static: the web app runs the whole product in the visitor's browser on sample data, so it needs no server and costs nothing to host. A developer or payroll operator who wants to pay people for real deploys the server build themselves. This guide covers both, plus the contracts. The demo site's [Run your own](https://sera-cx.github.io/sera-payroll/run-your-own/) page is the short version.
+
 Three things can be deployed, independently:
 
 | Piece | What it is | Where the reference deployment lives |

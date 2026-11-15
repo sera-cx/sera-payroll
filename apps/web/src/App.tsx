@@ -19,6 +19,7 @@ import { Loading } from './components/Common';
 import { Landing } from './screens/Landing';
 import { SignIn } from './screens/SignIn';
 import { Verify } from './screens/Verify';
+import { RunYourOwn } from './screens/RunYourOwn';
 import { BuildNotes } from './screens/BuildNotes';
 import { EmployerView } from './screens/employer/EmployerView';
 import { EmployeeView } from './screens/employee/EmployeeView';
@@ -53,6 +54,7 @@ function Shell() {
             <Route path="/" element={<Landing />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/verify" element={<Verify />} />
+            <Route path="/run-your-own" element={<RunYourOwn />} />
             <Route path="/invite/:token" element={<InviteParam />} />
             <Route path="/build-notes" element={<BuildNotes />} />
             <Route path="/employer/*" element={role === 'operator_admin' || role === 'preparer' || role === 'approver' ? <EmployerView /> : <Navigate to={home} replace />} />
