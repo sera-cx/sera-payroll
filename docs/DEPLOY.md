@@ -6,7 +6,7 @@ Three things can be deployed, independently:
 |---|---|---|
 | **Public demo** | The web app built in mock mode. The whole product runs in the visitor's browser on sample data. No server. | GitHub Pages: https://sera-cx.github.io/sera-payroll/ |
 | **Contracts** | `PayrollDisburser`, `PayslipRegistry` and two demo stablecoins on Sepolia. | Deployed. Addresses in `contracts/deployments/sepolia.json` and below. |
-| **Full stack** | The API with Postgres, the payout worker, webhooks, PDF payslips and real wallet signing, plus the web app pointed at it. | Any Docker host. Fly.io and Render configs are in `deploy/`. |
+| **Full stack** | The API with Postgres, the payout worker, webhooks, PDF payslips and real wallet signing, plus the web app pointed at it. | Any Docker host. One-click Render blueprint at `render.yaml`; Fly.io config in `deploy/`. |
 
 Nothing on the public demo moves real money. Keep every hosted demo on a testnet; the build notes explain why.
 
@@ -138,7 +138,30 @@ Then set `WEB_ORIGIN` to wherever the web app lives and build the web app with `
 
 ### Render
 
-`deploy/render.yaml` is a blueprint with the API (Docker), a Postgres database and the web app as a static site that is built with `VITE_API_BASE` pointing at the API. In Render choose New, Blueprint, pick the repository, and fill in the secrets it asks for.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sera-cx/sera-payroll)
+
+`render.yaml` at the repository root is a Render Blueprint with three resources: the API as a Docker web service, a Postgres database, and the web app as a static site built with `VITE_API_BASE` pointing at the API. The button above opens it in your Render account. From the dashboard the same thing is New, Blueprint, pick the repository.
+
+Render asks for the three values marked `sync: false` before the first deploy. Service URLs are `https://<service name>.onrender.com`; Render adds a suffix if the name is taken in your account, so copy the names it shows:
+
+| Variable | Service | Value |
+|---|---|---|
+| `WEB_ORIGIN` | sera-payroll-api | the static site's URL, for example `https://sera-payroll-web.onrender.com` |
+| `VITE_API_BASE` | sera-payroll-web | the API's URL, for example `https://sera-payroll-api.onrender.com` |
+| `VITE_SITE_URL` | sera-payroll-web | the static site's URL again, for canonicals, the sitemap and Open Graph |
+
+`OPERATOR_SIGNER_PRIVATE_KEY` can stay empty: it is only read when `CHAIN=sepolia`.
+
+Defaults give a hosted demo with sample data on the mock chain and sample rates. To settle through the Sepolia contracts, set `CHAIN=sepolia` on the API (the RPC and contract addresses are already in the blueprint) and give `OPERATOR_SIGNER_PRIVATE_KEY` a throwaway key with a little Sepolia ETH, since it pays gas to anchor payslips.
+
+After the first deploy:
+
+1. Open `https://<api>/v1/health` and expect `{"ok":true,...}`.
+2. Open the static site. The demo banner shows, "Sign in as" lists the sample users, and the Network tab shows calls to the API with a `sp_session` cookie (SameSite=None, Secure).
+3. The free Postgres plan expires after 30 days. Change `plan` in `render.yaml` to keep it, or accept that the demo reseeds on the next database.
+4. Later pushes to `main` redeploy both services (`autoDeployTrigger: commit`).
+
+If the static build cannot find pnpm, Render's image did not enable corepack; the build command already runs `corepack enable`, so check the build log's first lines and `NODE_VERSION`.
 
 ### Web app against a real API
 
@@ -153,5 +176,5 @@ Serve `dist/` from any static host with `404.html` as the fallback for unknown p
 
 - The GitHub Pages demo is live and rebuilds on push.
 - The contracts are deployed on Sepolia (addresses above).
-- The full stack is ready to deploy but needs a hosting account for the API and Postgres. The steps above are exact; nothing else is missing.
+- The full stack is one click away on Render (button above) and needs only a Render account; nothing else is missing.
 - A real Sera.cx testnet run also needs an API key from Sera.cx to poll settlement status.

@@ -11,6 +11,7 @@ All notable changes to this project are recorded here. The format follows Keep a
 - Deployment: API Dockerfile (built and booted in CI), Fly.io and Render configs, a manual Sepolia contract deployment workflow, `COOKIE_SAME_SITE` for a web app on another origin, and `docs/DEPLOY.md`.
 - Disclosure bundles now carry `chainId`, `registry` and `anchorId` so a verifier can check the anchor on chain.
 - Contracts deployed on Sepolia (see `contracts/deployments/sepolia.json`); the landing page lists them.
+- One-click Render deployment: `render.yaml` at the repository root and a Deploy to Render button in the README.
 
 ## [0.1.0] - Unreleased
 

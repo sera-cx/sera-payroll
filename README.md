@@ -53,7 +53,7 @@ apps/api           Fastify API: sessions and roles, pay runs, payout worker, web
 apps/web           React web app: Employer, Employee and Operator views, real wallet connection.
 contracts          Foundry: TestStablecoin, PayrollDisburser, PayslipRegistry.
 docs               build notes, API contract, on-chain payslip design, deployment guide, the original prototype.
-deploy             Fly.io and Render configs for the API and web app.
+deploy             Fly.io config for the API. The Render blueprint is render.yaml at the root.
 ```
 
 ## Quick start
@@ -160,7 +160,9 @@ The operator's brand leads. "Settlement by Sera.cx" is the only Sera.cx mark tha
 
 ## Deploying
 
-[docs/DEPLOY.md](docs/DEPLOY.md) covers the three pieces: the public demo on GitHub Pages (static, prerendered, rebuilt on every push), the contracts on Sepolia (`forge script` locally or the manual GitHub workflow), and the full stack (one Docker image for the API, Postgres, and the web app pointed at it, with Fly.io and Render configs in `deploy/`).
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sera-cx/sera-payroll)
+
+The button deploys the API, a Postgres database and the web app from `render.yaml`; Render asks for three URLs during setup, which [docs/DEPLOY.md](docs/DEPLOY.md) explains. That guide also covers the other pieces: the public demo on GitHub Pages (static, prerendered, rebuilt on every push), the contracts on Sepolia (`forge script` locally or the manual GitHub workflow), and the full stack (one Docker image for the API, Postgres, and the web app pointed at it, with Fly.io and Render configs in `deploy/`).
 
 ## Licence
 

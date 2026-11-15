@@ -1,0 +1,86 @@
+# Render blueprint for Sera.cx Payroll: the API (Docker) with Postgres, and the
+# web app as a static site. One click from the README's "Deploy to Render"
+# button, or New > Blueprint in the Render dashboard. docs/DEPLOY.md walks
+# through the three values Render asks for and what to do after the first deploy.
+#
+# Defaults give a hosted demo (DEMO_MODE, sample data, mock chain). To settle on
+# Sepolia, set CHAIN=sepolia with the three chain variables listed under the API.
+
+databases:
+  - name: sera-payroll-db
+    plan: free              # free Postgres expires after 30 days; pick basic-256mb or larger to keep it
+    databaseName: sera_payroll
+    user: sera_payroll
+
+services:
+  # ---------------------------------------------------------------- API
+  - type: web
+    name: sera-payroll-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: starter
+    region: singapore
+    healthCheckPath: /v1/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sera-payroll-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DEMO_MODE
+        value: "true"
+      - key: SEED_ON_START
+        value: "true"
+      - key: BRAND
+        value: "[YOUR PAYROLL BRAND]"
+      - key: COOKIE_SAME_SITE
+        value: none           # the web app is on another origin
+      - key: WEB_ORIGIN
+        sync: false           # the static site's URL, e.g. https://sera-payroll-web.onrender.com
+      - key: SWAP_PROVIDER
+        value: sample         # "sera" with SERA_API_KEY and SERA_API_SECRET from Sera.cx
+      - key: CHAIN
+        value: mock           # "sepolia" to anchor payslips and settle through the deployed contracts
+      - key: RPC_URL
+        value: https://sepolia.gateway.tenderly.co
+      - key: PAYROLL_DISBURSER_ADDRESS
+        value: "0x874DE1F483Dd5C053E51cf9e9dAc161452050b85"
+      - key: PAYSLIP_REGISTRY_ADDRESS
+        value: "0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D"
+      - key: OPERATOR_SIGNER_PRIVATE_KEY
+        sync: false           # only for CHAIN=sepolia: a throwaway key with a little Sepolia ETH to relay anchors
+      - key: LOG_LEVEL
+        value: info
+
+  # ------------------------------------------------------------ Web app
+  - type: web
+    name: sera-payroll-web
+    runtime: static
+    buildCommand: corepack enable && corepack prepare pnpm@10.4.1 --activate && pnpm install --frozen-lockfile && pnpm --filter @sera-payroll/core build && cd apps/web && pnpm build
+    staticPublishPath: apps/web/dist
+    autoDeployTrigger: commit
+    routes:
+      # Existing files (every prerendered page) are served first; only unknown
+      # paths fall through to the app shell, which lets the router decide.
+      - type: rewrite
+        source: /*
+        destination: /404.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_API_BASE
+        sync: false           # the API's URL, e.g. https://sera-payroll-api.onrender.com
+      - key: VITE_SITE_URL
+        sync: false           # this site's URL, e.g. https://sera-payroll-web.onrender.com (canonicals, sitemap, Open Graph)
+      - key: VITE_CHAIN_ID
+        value: "11155111"
