@@ -63,6 +63,6 @@ jobs:
           cache-to: type=gha,mode=max
       - name: Boot the image and hit /v1/health
         run: |
-          docker run -d --name api -p 4000:4000 -e DEMO_MODE=true -e SEED_ON_START=true -e SESSION_SECRET=ci -e PGLITE_MEMORY=1 sera-payroll-api:ci
+          docker run -d --name api -p 4000:4000 -e DEMO_MODE=true -e SEED_ON_START=true -e SESSION_SECRET=ci-only-not-a-secret-0123456789 -e PGLITE_MEMORY=1 sera-payroll-api:ci
           for i in $(seq 1 30); do curl -fsS http://localhost:4000/v1/health && exit 0; sleep 2; done
           docker logs api; exit 1
