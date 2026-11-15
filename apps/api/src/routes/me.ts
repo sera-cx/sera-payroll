@@ -120,7 +120,7 @@ export function meRoutes(deps: Deps) {
       const { t, personId } = await me(req);
       const s = await getPayslip(deps.db, t.client.id, req.params.runId, personId);
       const names = (req.query.fields ?? 'net,payday').split(',').map((x) => x.trim()).filter(Boolean);
-      return { ...discloseFields(s, names), explorerUrl: s.anchorTx ? deps.chain.explorerTxUrl(s.anchorTx as never) : null };
+      return { ...discloseFields(s, names, { chainId: deps.chain.chainId, registry: deps.config.PAYSLIP_REGISTRY_ADDRESS ?? null }), explorerUrl: s.anchorTx ? deps.chain.explorerTxUrl(s.anchorTx as never) : null };
     });
 
     // Public invite flow
@@ -149,7 +149,7 @@ export function meRoutes(deps: Deps) {
       }
       await deps.db.update(people).set({ email: email.toLowerCase() }).where(eq(people.id, p.id));
       await deps.db.update(invites).set({ acceptedAt: deps.now() }).where(eq(invites.token, req.params.token));
-      setSessionCookie(reply, await createSession(deps.db, u.id), secure);
+      setSessionCookie(reply, await createSession(deps.db, u.id), secure, deps.config.COOKIE_SAME_SITE);
       return { ok: true, userId: u.id };
     });
   };

@@ -20,7 +20,7 @@ export function authRoutes(deps: Deps) {
       const { userId } = z.object({ userId: z.string() }).parse(req.body);
       const u = (await deps.db.select().from(users).where(eq(users.id, userId)).limit(1))[0];
       if (!u) throw notFound('User');
-      setSessionCookie(reply, await createSession(deps.db, u.id), secure);
+      setSessionCookie(reply, await createSession(deps.db, u.id), secure, deps.config.COOKIE_SAME_SITE);
       return { ok: true };
     });
     app.post('/auth/magic-link', async (req, reply) => {
@@ -33,7 +33,7 @@ export function authRoutes(deps: Deps) {
       const { token } = z.object({ token: z.string() }).parse(req.query);
       const userId = await consumeMagicLink(deps.db, token);
       if (!userId) throw unauthorized('That sign-in link is not valid any more.');
-      setSessionCookie(reply, await createSession(deps.db, userId), secure);
+      setSessionCookie(reply, await createSession(deps.db, userId), secure, deps.config.COOKIE_SAME_SITE);
       return reply.redirect(deps.config.WEB_ORIGIN);
     });
     app.get('/auth/siwe/nonce', async () => ({ nonce: await issueNonce(deps.db, 'siwe', null), domain: new URL(deps.config.WEB_ORIGIN).host, example: siweMessage(new URL(deps.config.WEB_ORIGIN).host, '0x…', '<nonce>', new Date().toISOString()) }));
@@ -41,7 +41,7 @@ export function authRoutes(deps: Deps) {
       const { message, signature } = z.object({ message: z.string(), signature: z.string().regex(/^0x[0-9a-fA-F]+$/) }).parse(req.body);
       const u = await verifySiwe(deps.db, message, signature as `0x${string}`, new URL(deps.config.WEB_ORIGIN).host);
       if (!u) throw unauthorized('Signature, nonce or wallet not recognised.');
-      setSessionCookie(reply, await createSession(deps.db, u.id), secure);
+      setSessionCookie(reply, await createSession(deps.db, u.id), secure, deps.config.COOKIE_SAME_SITE);
       return { ok: true };
     });
     // Signed out is not an error: the web app needs demoMode and the network before sign-in.

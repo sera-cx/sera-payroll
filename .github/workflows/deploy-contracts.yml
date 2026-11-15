@@ -1,0 +1,64 @@
+name: Deploy contracts
+
+# Manual. Deploys PayrollDisburser, PayslipRegistry and the demo stablecoins to
+# Sepolia with a deployer key held in repository secrets, then opens a pull
+# request with the new deployments/11155111.json.
+#
+# Secrets: DEPLOYER_PRIVATE_KEY (funded with Sepolia ETH only), SEPOLIA_RPC_URL,
+# optionally ETHERSCAN_API_KEY for source verification.
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_tokens:
+        description: Deploy the demo TestStablecoin faucets too
+        type: boolean
+        default: true
+      verify:
+        description: Verify sources on Etherscan (needs ETHERSCAN_API_KEY)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: sepolia
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - name: Deploy to Sepolia
+        working-directory: contracts
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          DEPLOY_TEST_TOKENS: ${{ inputs.test_tokens }}
+        run: |
+          test -n "$PRIVATE_KEY" || { echo "DEPLOYER_PRIVATE_KEY secret is not set"; exit 1; }
+          test -n "$SEPOLIA_RPC_URL" || { echo "SEPOLIA_RPC_URL secret is not set"; exit 1; }
+          forge script script/Deploy.s.sol:Deploy --rpc-url "$SEPOLIA_RPC_URL" --broadcast ${{ inputs.verify && '--verify' || '' }} -vv
+          cp deployments/11155111.json deployments/sepolia.json
+          cat deployments/sepolia.json
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          title: 'Contracts: Sepolia deployment'
+          commit-message: 'Contracts: record the Sepolia deployment'
+          branch: deploy/sepolia
+          body: |
+            New addresses from `forge script script/Deploy.s.sol:Deploy` on Sepolia. Copy them into the API environment:
+
+            ```
+            CHAIN=sepolia
+            PAYROLL_DISBURSER_ADDRESS=<PayrollDisburser>
+            PAYSLIP_REGISTRY_ADDRESS=<PayslipRegistry>
+            ```
+          add-paths: |
+            contracts/deployments/*.json

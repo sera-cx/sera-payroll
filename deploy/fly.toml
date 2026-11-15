@@ -1,0 +1,40 @@
+# Fly.io app for the API. From the repository root:
+#   fly launch --no-deploy --copy-config --config deploy/fly.toml --name <your-app>
+#   fly postgres create --name <your-app>-db && fly postgres attach <your-app>-db --app <your-app>
+#   fly secrets set SESSION_SECRET=... OPERATOR_SIGNER_PRIVATE_KEY=0x... RPC_URL=https://... PAYROLL_DISBURSER_ADDRESS=0x... PAYSLIP_REGISTRY_ADDRESS=0x...
+#   fly deploy --config deploy/fly.toml --dockerfile apps/api/Dockerfile
+# Then build the web app with VITE_API_BASE=https://<your-app>.fly.dev and host it anywhere static.
+app = "sera-payroll-api"
+primary_region = "sin"
+
+[build]
+  dockerfile = "../apps/api/Dockerfile"
+
+[env]
+  PORT = "4000"
+  DEMO_MODE = "true"          # the public demo. Set false for a real operator.
+  SEED_ON_START = "true"
+  CHAIN = "sepolia"
+  SWAP_PROVIDER = "sample"    # "sera" once SERA_API_KEY and SERA_API_SECRET are set
+  COOKIE_SAME_SITE = "none"   # the web app lives on another origin
+  WEB_ORIGIN = "https://sera-cx.github.io"
+  BRAND = "[YOUR PAYROLL BRAND]"
+  LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/v1/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

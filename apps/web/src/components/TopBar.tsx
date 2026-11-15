@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { api } from '../api';
 import { useSession } from '../lib/session';
@@ -15,15 +15,14 @@ export function TopBar({ brand, clientName }: { brand: string; clientName: strin
   else if (role === 'employee') views.push(['/employee', 'Employee']);
   return (
     <div className="bar">
-      <div className="brand"><div className="dot" aria-hidden="true" /><span>{brand}{clientName && <small>Client: {clientName}</small>}</span></div>
-      {views.length > 0 && (
-        <nav className="seg" aria-label="View as">
-          {views.map(([to, label]) => (
-            <NavLink key={to} to={to}>{({ isActive }) => <button type="button" aria-pressed={isActive}>{label}</button>}</NavLink>
-          ))}
-          <NavLink to="/build-notes">{({ isActive }) => <button type="button" aria-pressed={isActive}>Build notes</button>}</NavLink>
-        </nav>
-      )}
+      <Link to="/" className="brand" aria-label={`${brand}, overview`}><div className="dot" aria-hidden="true" /><span>{brand}{clientName && <small>Client: {clientName}</small>}</span></Link>
+      <nav className="seg" aria-label="Views">
+        {views.map(([to, label]) => (
+          <NavLink key={to} to={to}>{({ isActive }) => <button type="button" aria-pressed={isActive}>{label}</button>}</NavLink>
+        ))}
+        <NavLink to="/verify">{({ isActive }) => <button type="button" aria-pressed={isActive}>Verify a payslip</button>}</NavLink>
+        <NavLink to="/build-notes">{({ isActive }) => <button type="button" aria-pressed={isActive}>Build notes</button>}</NavLink>
+      </nav>
       <div className="flex">
         {me.demoMode && <DemoPicker />}
         <WalletButton />

@@ -72,7 +72,7 @@ export interface AuditItem { at: string; actor: string; action: string; subject:
 export interface PayoutOptionView { option: PayoutOption; enabled: boolean; reason?: string; estimate: string }
 export interface MeView extends Person { client: { name: string; brand: string }; ramps: Ramps; rates: Record<Fiat, string>; payoutOptions: PayoutOptionView[] }
 export interface MyPayslip { runId: string; label: string; payday: string; kind: string; gross: string; deduction: string; net: string; currency: Fiat; payouts: PayoutView[]; payslip: { root: string; anchorTx: string | null; explorerUrl: string | null } | null }
-export interface Disclosure { root: string; anchorTx: string | null; fields: { leaf: { name: string; value: string; salt: string }; proof: string[] }[] }
+export interface Disclosure { root: string; anchorTx: string | null; explorerUrl?: string | null; employerSignature?: string | null; chainId?: number | null; registry?: string | null; anchorId?: string | null; runId?: string; personId?: string; payday?: string; fields: { leaf: { name: string; value: string; salt: string }; proof: string[] }[] }
 
 export interface OperatorClient { id: string; name: string; feePercent: string; peopleCount: number; treasuryWallet: string | null }
 export interface OperatorView { id: string; name: string; brand: string; settings: { addressHoldHours: number; demoMode: boolean }; clients: OperatorClient[] }

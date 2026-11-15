@@ -10,6 +10,7 @@ const Env = z.object({
   DEMO_MODE: bool.default(false),
   SEED_ON_START: bool.default(false),
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
+  COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   SESSION_SECRET: z.string().min(16).default('dev-only-session-secret-change-me'),
   BRAND: z.string().default('[YOUR PAYROLL BRAND]'),
   HOLD_HOURS: z.coerce.number().int().positive().default(48),

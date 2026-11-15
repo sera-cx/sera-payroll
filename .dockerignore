@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.pglite
+**/.env
+**/.env.*
+!**/.env.example
+apps/web
+contracts/out
+contracts/cache
+contracts/broadcast
+contracts/lib
+docs
+.git
+.github
+.claude

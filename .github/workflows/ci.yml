@@ -44,3 +44,25 @@ jobs:
         if: steps.check.outputs.present == 'true'
         working-directory: contracts
         run: forge test -vv
+
+  docker:
+    name: API container image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          load: true
+          tags: sera-payroll-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Boot the image and hit /v1/health
+        run: |
+          docker run -d --name api -p 4000:4000 -e DEMO_MODE=true -e SEED_ON_START=true -e SESSION_SECRET=ci -e PGLITE_MEMORY=1 sera-payroll-api:ci
+          for i in $(seq 1 30); do curl -fsS http://localhost:4000/v1/health && exit 0; sleep 2; done
+          docker logs api; exit 1

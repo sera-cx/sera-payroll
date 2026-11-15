@@ -52,10 +52,19 @@ export async function getPayslip(db: Db, clientId: string, runId: string, person
   return s;
 }
 
-export function discloseFields(s: typeof payslips.$inferSelect, names: string[]) {
-  const sealed = { doc: s.document as unknown as PayslipDocument, leaves: s.leaves as { name: string; value: string; salt: Hex }[], root: s.root as Hex, docHash: s.docHash as Hex };
+/**
+ * Selective disclosure bundle. Carries what a verifier needs to check the proof
+ * locally (root, leaves, proofs) and, when the payslip is anchored, where to
+ * find the anchor on chain (chainId, registry, anchorId). Nothing else leaks.
+ */
+export function discloseFields(s: typeof payslips.$inferSelect, names: string[], chain?: { chainId: number; registry: string | null }) {
+  const doc = s.document as unknown as PayslipDocument;
+  const sealed = { doc, leaves: s.leaves as { name: string; value: string; salt: Hex }[], root: s.root as Hex, docHash: s.docHash as Hex };
   const d = disclose(sealed, names);
-  return { root: d.root, anchorTx: s.anchorTx, employerSignature: s.employerSignature, fields: d.fields };
+  return {
+    root: d.root, anchorTx: s.anchorTx, employerSignature: s.employerSignature, fields: d.fields,
+    chainId: chain?.chainId ?? null, registry: chain?.registry ?? null, anchorId: s.anchorId, runId: s.runId, personId: s.personId, payday: doc.payday,
+  };
 }
 
 /** PDF payslip. Helvetica is fine; forks drop in Inter and their own brand. */

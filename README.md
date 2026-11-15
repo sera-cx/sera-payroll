@@ -4,6 +4,8 @@ Open-source stablecoin payroll. Employers fund a pay run in any supported stable
 
 **Settlement by Sera.cx.** Sera.cx does not run payroll for anyone. Payroll companies and other operators fork this repository and run it under their own brand and licence, in the same way as the Sera.cx open-source payment gateway.
 
+**Live demo: https://sera-cx.github.io/sera-payroll/** Every screen, running entirely in your browser on sample data. Open any screen and it signs you in as the right sample user.
+
 > **Demo only.** The hosted demo runs on a testnet with test stablecoins and sample data. Nothing on it is real and no salary moves. See [Risks](#risks-to-keep-visible).
 
 ## Why this exists
@@ -50,7 +52,8 @@ packages/chain     viem ChainAdapter, contract ABIs, network and stablecoin addr
 apps/api           Fastify API: sessions and roles, pay runs, payout worker, webhooks, API keys, PDF payslips, demo mode.
 apps/web           React web app: Employer, Employee and Operator views, real wallet connection.
 contracts          Foundry: TestStablecoin, PayrollDisburser, PayslipRegistry.
-docs               build notes, API contract, on-chain payslip design, the original prototype.
+docs               build notes, API contract, on-chain payslip design, deployment guide, the original prototype.
+deploy             Fly.io and Render configs for the API and web app.
 ```
 
 ## Quick start
@@ -154,6 +157,10 @@ The operator's brand leads. "Settlement by Sera.cx" is the only Sera.cx mark tha
 - [docs/ON_CHAIN_PAYSLIP.md](docs/ON_CHAIN_PAYSLIP.md): on-chain payslip design.
 - [docs/prototype](docs/prototype): the original single-file prototype, the reference for behaviour.
 - [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CHANGELOG.md](CHANGELOG.md).
+
+## Deploying
+
+[docs/DEPLOY.md](docs/DEPLOY.md) covers the three pieces: the public demo on GitHub Pages (static, prerendered, rebuilt on every push), the contracts on Sepolia (`forge script` locally or the manual GitHub workflow), and the full stack (one Docker image for the API, Postgres, and the web app pointed at it, with Fly.io and Render configs in `deploy/`).
 
 ## Licence
 

@@ -17,8 +17,9 @@ export async function createSession(db: Db, userId: string): Promise<string> {
   return id;
 }
 
-export function setSessionCookie(reply: FastifyReply, id: string, secure: boolean): void {
-  reply.setCookie(SESSION_COOKIE, id, { path: '/', httpOnly: true, sameSite: 'lax', secure, maxAge: SESSION_DAYS * 86_400 });
+export function setSessionCookie(reply: FastifyReply, id: string, secure: boolean, sameSite: 'lax' | 'strict' | 'none' = 'lax'): void {
+  // A web app on another origin (GitHub Pages in front of a Fly API) needs SameSite=None, which browsers only accept with Secure.
+  reply.setCookie(SESSION_COOKIE, id, { path: '/', httpOnly: true, sameSite, secure: secure || sameSite === 'none', maxAge: SESSION_DAYS * 86_400 });
 }
 
 export async function resolveUser(db: Db, req: FastifyRequest): Promise<AuthUser | null> {

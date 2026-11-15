@@ -18,7 +18,7 @@ async function boot() {
     <React.StrictMode>
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={qc}>
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ToastProvider>
               <App />
             </ToastProvider>

@@ -5,7 +5,7 @@
 import {
   FIAT, FUNDING_OPTIONS, PAYOUT_OPTIONS, SAMPLE_CLIENTS, SAMPLE_PLUGINS, SAMPLE_RAMPS, SAMPLE_RATES, ccyOf, isBank, conv, fixed,
   buildRecord, lines, totals, rateLine, pathSteps, runInfo, employerSetAddress, employeeSetAddress, approvePending, cancelPending, setLocked, markTested,
-  advancePayout, failPayout, retryPayout, accountingCsv, parsePayFile, importMessage, emptyWallet, patternScreening, sealPayslip, keccak256Hex,
+  advancePayout, failPayout, retryPayout, accountingCsv, parsePayFile, importMessage, emptyWallet, patternScreening, sealPayslip, disclose as coreDisclose, keccak256Hex,
   type EngineContext, type Person as CorePerson, type AddressEvent, type PayoutOption, type Fiat, type RunRecord as CoreRecord, type WalletAddress,
 } from './core-shim';
 import type * as T from '../types';
@@ -105,7 +105,7 @@ export function importPeople(cid: string, text: string) {
   return { imported: r.rows.length, rejected: r.rejected, message: importMessage(r), people: made };
 }
 async function screen(e: { p: CorePerson }) { if (!e.p.wallet.address) return; const s = await patternScreening.screen(e.p.wallet.address as `0x${string}`, 'sepolia'); e.p.wallet.screening = s.status; e.p.wallet.screeningReason = s.reason; }
-export function invite(cid: string, pid: string) { const c = client(cid); const p = personView(c, pid); mail(c, p.name, 'You are invited to set up how you get paid', 'invite'); return { url: `${location.origin}/invite/demo-${pid}`, expiresAt: new Date(Date.now() + 7 * 86400e3).toISOString() }; }
+export function invite(cid: string, pid: string) { const c = client(cid); const p = personView(c, pid); mail(c, p.name, 'You are invited to set up how you get paid', 'invite'); return { url: `${location.origin}${import.meta.env.BASE_URL}invite/demo-${pid}`, expiresAt: new Date(Date.now() + 7 * 86400e3).toISOString() }; }
 function mail(c: ClientState, to: string, subject: string, kind: string) { c.outbox.unshift({ id: id('m'), at: now(), to, subject, kind }); }
 export const outbox = (cid: string) => client(cid).outbox;
 
@@ -154,11 +154,13 @@ function snapshot(c: ClientState, by: string, signedWith: string) {
   const rec = buildRecord(c.ctx, (pid, i) => `${c.run.id}-${pid}-${i}`);
   return Object.assign(rec, { id: c.run.id, status: 'sent' as const, sentAt: now(), by, signedWith, payslips: new Map<string, T.PayslipRef>() });
 }
+const sealedSlips = new Map<string, ReturnType<typeof sealPayslip>>();
 function sealAll(c: ClientState, rec: ClientState['records'][number]) {
   for (const i of rec.items) {
     if (rec.payslips.has(i.personId + i.kind)) continue;
     if (!i.payouts.every((g) => g.state === 'done' || g.state === 'held')) continue;
     const sealed = sealPayslip({ version: 1, runId: rec.id, runLabel: rec.label, payday: rec.payday, employer: '0x0000000000000000000000000000000000000001', employerName: c.name, personId: i.personId, personName: i.name, personType: i.type, kind: i.kind, currency: i.currency as Fiat, gross: i.gross, deduction: i.deduction, net: i.net, payouts: i.payouts.map((g) => ({ option: g.option, amount: g.amount, lockedRate: g.lockedRate, usdValue: g.usdValue, txHash: g.txHash as `0x${string}` | null, address: g.addressSnapshot as `0x${string}` | null, network: g.networkSnapshot })) }, () => fakeHash() as `0x${string}`);
+    sealedSlips.set(rec.id + i.personId + i.kind, sealed);
     rec.payslips.set(i.personId + i.kind, { id: id('slip'), root: sealed.root, docHash: sealed.docHash, anchorTx: fakeHash(), anchorId: sealed.root, employerSignature: null, explorerUrl: null });
     const ps = rec.payslips.get(i.personId + i.kind)!; ps.explorerUrl = explorer(ps.anchorTx);
   }
@@ -241,8 +243,10 @@ export function myPayslips(): T.MyPayslip[] {
 }
 export function disclose(runId: string, fields: string[]): T.Disclosure {
   const { c, pid } = myClient(); const r = c.records.find((x) => x.id === runId); const i = r?.items.find((x) => x.personId === pid); const ps = r && i ? r.payslips.get(i.personId + i.kind) : null;
-  if (!r || !i || !ps) throw err(404, 'not_found', 'No sealed payslip for that run yet.');
-  return { root: ps.root, anchorTx: ps.anchorTx, fields: fields.map((f) => ({ leaf: { name: f, value: f === 'net' ? i.net : f === 'payday' ? r.payday : (i as unknown as Record<string, string>)[f] ?? '', salt: fakeHash() }, proof: [fakeHash(), fakeHash()] })) };
+  const sealed = r && i ? sealedSlips.get(r.id + i.personId + i.kind) : null;
+  if (!r || !i || !ps || !sealed) throw err(404, 'not_found', 'No sealed payslip for that run yet.');
+  const d = coreDisclose(sealed, fields.length ? fields : ['net', 'payday']);
+  return { root: d.root, fields: d.fields, anchorTx: ps.anchorTx, explorerUrl: ps.explorerUrl ?? null, employerSignature: null, chainId: 11155111, registry: null, anchorId: ps.anchorId, runId: r.id, personId: pid, payday: r.payday };
 }
 export const inviteInfo = (token: string) => { const pid = token.replace(/^demo-/, ''); for (const c of clients.values()) if (c.people.has(pid)) return { personName: c.people.get(pid)!.p.name, clientName: c.name, brand: '[YOUR PAYROLL BRAND]' }; throw err(404, 'not_found', 'This invite is not valid.'); };
 export const acceptInvite = (token: string, email: string) => { const pid = token.replace(/^demo-/, ''); const u = users.find((x) => x.personId === pid); if (!u) throw err(404, 'not_found', 'This invite is not valid.'); u.email = email; setSession(u.id); };

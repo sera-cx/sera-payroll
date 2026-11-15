@@ -2,6 +2,15 @@
 
 All notable changes to this project are recorded here. The format follows Keep a Changelog and the project uses semantic versioning.
 
+## [Unreleased]
+
+### Added
+- Public demo on GitHub Pages: the web app in mock mode, every route prerendered to static HTML with per-page title, description, canonical, Open Graph, Twitter and JSON-LD tags, plus sitemap, robots, 404 fallback and an Open Graph image.
+- Landing page, a public payslip proof verifier at `/verify`, and static descriptions of every screen for crawlers.
+- Demo deep links: opening any screen signs the visitor in as the sample user for that screen; `?as=<role or user id>` switches.
+- Deployment: API Dockerfile (built and booted in CI), Fly.io and Render configs, a manual Sepolia contract deployment workflow, `COOKIE_SAME_SITE` for a web app on another origin, and `docs/DEPLOY.md`.
+- Disclosure bundles now carry `chainId`, `registry` and `anchorId` so a verifier can check the anchor on chain.
+
 ## [0.1.0] - Unreleased
 
 ### Added

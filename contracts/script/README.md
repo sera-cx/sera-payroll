@@ -40,3 +40,7 @@ The treasury wallet must `approve(PAYROLL_DISBURSER_ADDRESS, amount)` on each st
 ## Mainnet
 
 Only `PayrollDisburser` and `PayslipRegistry` are meant for mainnet (`DEPLOY_TEST_TOKENS=false`). The script refuses to deploy `TestStablecoin` on chainId 1. Remember the licensing note in the build notes: the Sera.cx-hosted demo stays on a testnet.
+
+## Public RPC endpoints
+
+These answer on Sepolia without an API key at the time of writing: `https://ethereum-sepolia-rpc.publicnode.com`, `https://1rpc.io/sepolia`. The repository's manual GitHub workflow (`.github/workflows/deploy-contracts.yml`) runs this script from secrets and opens a pull request with the addresses. See `docs/DEPLOY.md`.
