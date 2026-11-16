@@ -65,6 +65,23 @@ Three contracts, all permissionless and holding no funds. Details in [`contracts
 
 Deployed on 15 November 2026 by `0xeB17b3F4ea77178Dc6ad94f026CF76D790868154`, a throwaway key that only ever held testnet ETH. Sources are verified on Sourcify (exact match) and show on Etherscan through it.
 
+### A sample run on these contracts
+
+On 16 November 2026 the October 2026 payroll of the first sample company (Sample Studio Sdn Bhd) was paid through them with the demo stablecoins, and one payslip was anchored:
+
+| Step | Transaction |
+|---|---|
+| Two payouts (8500.00 tMYRT and 428.57 tUSDT) in one `disburse` | [`0xeca6d0…9b08e`](https://sepolia.etherscan.io/tx/0xeca6d081fe8bcf6c6a9375922281fe52dbc9373a63d8e05e67589e4c9e59b08e) |
+| Aisyah Rahman's payslip root anchored, signed by the employer | [`0x3e2a9e…3b6f9`](https://sepolia.etherscan.io/tx/0x3e2a9e87357365fb8bba82957b93a0fde170df9ba1acd17b73700b43d413b6f9) |
+
+The run record is `contracts/deployments/sepolia-sample-run.json`. The proof bundle the demo's verifier page offers (`apps/web/src/data/sepolia-sample-proof.json`) discloses five fields of that payslip; the undisclosed salts stay off the repository. The script is `packages/chain/scripts/sepolia-sample-run.ts`:
+
+```bash
+pnpm exec tsx packages/chain/scripts/sepolia-sample-run.ts   # reads PRIVATE_KEY and SEPOLIA_RPC_URL from contracts/.env
+```
+
+It uses the same `@sera-payroll/core` and `@sera-payroll/chain` code as the API's payout worker: mint and approve, `disburse`, seal, EIP-712 sign, `anchor`, `disclose`. Re-running it is safe; the disburser skips paid legs and the registry records a correction when the root changes. A fork with its own deployment can run it as a smoke test before pointing the API at the contracts.
+
 ### Gas on current Sepolia
 
 Sepolia prices contract creation far above what Foundry's local simulation assumes (the node estimated 4.2M gas for `PayrollDisburser` where the cancun simulation used 615k), so a plain `forge script --broadcast` sends too little gas and the first transaction runs out. Pass `--skip-simulation` so Foundry takes the gas estimate from the node, as the commands below do. Public RPC pools can also disagree about the head block during simulation; `https://sepolia.gateway.tenderly.co` was consistent.

@@ -11,7 +11,7 @@ Three ways to use this repository:
 1. **Try the static demo.** The site above needs no server; the API and every adapter are played back in the browser.
 2. **Run it locally.** `pnpm install && pnpm demo`, then the web app. See [Quick start](#quick-start).
 3. **Deploy your own.** One container for the API, Postgres, and the static web app pointed at it. [Deploy to Render](#deploying) in one click, or any Docker host. The demo site's [Run your own](https://sera-cx.github.io/sera-payroll/run-your-own/) page and [docs/DEPLOY.md](docs/DEPLOY.md) have the notes. 
-The contracts are deployed on Sepolia: PayrollDisburser `0x874DE1F483Dd5C053E51cf9e9dAc161452050b85`, PayslipRegistry `0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D` (full list in [docs/DEPLOY.md](docs/DEPLOY.md)).
+The contracts are deployed on Sepolia: PayrollDisburser `0x874DE1F483Dd5C053E51cf9e9dAc161452050b85`, PayslipRegistry `0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D` (full list in [docs/DEPLOY.md](docs/DEPLOY.md)). A sample payroll run has been paid through them and one payslip anchored; the [verifier page](https://sera-cx.github.io/sera-payroll/verify/) checks its proof against the registry.
 
 > **Demo only.** The hosted demo runs on a testnet with test stablecoins and sample data. Nothing on it is real and no salary moves. See [Risks](#risks-to-keep-visible).
 

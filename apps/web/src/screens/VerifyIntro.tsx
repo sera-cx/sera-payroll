@@ -7,7 +7,7 @@ export function VerifyIntro() {
       <ul className="intro-list">
         <li>A proof is a JSON bundle with a <code>root</code> and, for each field, its <code>name</code>, <code>value</code>, <code>salt</code> and Merkle <code>proof</code>.</li>
         <li>The root is the payslip's sorted-pair Merkle root over salted <code>keccak256(abi.encode(name, value, salt))</code> leaves.</li>
-        <li>Proofs from the demo verify locally. Proofs from a live operator also match an anchor on chain.</li>
+        <li>Proofs from the browser demo verify locally. Proofs from a live operator also match an anchor on chain, and this page carries one such proof from a sample run paid on Sepolia.</li>
       </ul>
     </header>
   );

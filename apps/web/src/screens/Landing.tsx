@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FAQ, REPO, ROUTES, SITE_NAME, type Group } from '../seo';
-import { SEPOLIA_CONTRACTS as C } from '../contracts';
+import { SEPOLIA_CONTRACTS as C, SEPOLIA_SAMPLE_RUN as RUN } from '../contracts';
 
 const GROUPS: Group[] = ['Employer', 'Employee', 'Operator', 'Start here'];
 
@@ -93,7 +93,9 @@ export function Landing() {
             <tr><td>tMYRT</td><td>Demo stablecoin with a faucet, 6 decimals</td><td><a className="mono addr" href={`${C.explorer}/address/${C.tMYRT}`} target="_blank" rel="noreferrer">{C.tMYRT}</a></td></tr>
           </tbody>
         </table>
-        <p className="fine"><a href={`${REPO}/blob/main/contracts`} target="_blank" rel="noreferrer">Contract sources and tests</a> · <a href={`${REPO}/blob/main/docs/DEPLOY.md`} target="_blank" rel="noreferrer">How to deploy your own</a></p>
+        <h3>A sample run, paid for real</h3>
+        <p>The {RUN.runLabel} of {RUN.employerName}, the first sample company in the demo, was paid on Sepolia with the demo stablecoins: {RUN.legs} payouts in <a href={`${C.explorer}/tx/${RUN.disburseTx}`} target="_blank" rel="noreferrer">one PayrollDisburser transaction</a>, then one payslip <a href={`${C.explorer}/tx/${RUN.anchorTx}`} target="_blank" rel="noreferrer">anchored in the PayslipRegistry</a>, signed by the employer. The employee's proof of net pay from that payslip is on the <Link to="/verify">verifier page</Link>, where the root is checked against the contract. The script that did it is <code>packages/chain/scripts/sepolia-sample-run.ts</code>, the same core and chain code the server build uses.</p>
+        <p className="fine"><a href={`${REPO}/blob/main/contracts`} target="_blank" rel="noreferrer">Contract sources and tests</a> · <a href={`${REPO}/blob/main/contracts/deployments/sepolia-sample-run.json`} target="_blank" rel="noreferrer">Record of the sample run</a> · <a href={`${REPO}/blob/main/docs/DEPLOY.md`} target="_blank" rel="noreferrer">How to deploy your own</a></p>
       </section>
 
       <section aria-labelledby="h-real">

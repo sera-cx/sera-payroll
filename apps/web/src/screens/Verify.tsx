@@ -3,6 +3,10 @@ import { verifyProof, type PayslipLeaf } from '@sera-payroll/core';
 import { createPublicClient, http, isAddress, isHex, type Hex } from 'viem';
 import { mainnet, sepolia } from 'viem/chains';
 import { VerifyIntro } from './VerifyIntro';
+import sampleProof from '../data/sepolia-sample-proof.json';
+
+/** A real proof: Aisyah Rahman's October 2026 payslip, anchored in the PayslipRegistry on Sepolia. */
+export const SAMPLE_PROOF_TEXT = JSON.stringify(sampleProof, null, 2);
 
 interface Bundle {
   root: Hex;
@@ -36,7 +40,7 @@ export async function checkBundle(text: string): Promise<Result> {
   let chain: Result['chain'] = null;
   if (b.registry && b.anchorId && b.chainId && isAddress(b.registry) && isHex(b.anchorId)) {
     try {
-      const client = createPublicClient({ chain: b.chainId === 1 ? mainnet : sepolia, transport: http() });
+      const client = createPublicClient({ chain: b.chainId === 1 ? mainnet : sepolia, transport: http(b.chainId === 1 ? undefined : 'https://sepolia.gateway.tenderly.co') });
       const a = await client.readContract({ address: b.registry, abi: REGISTRY_ABI, functionName: 'getAnchor', args: [b.anchorId] });
       chain = { found: a.employer !== ZERO, matches: a.root.toLowerCase() === b.root.toLowerCase(), employer: a.employer, payday: day(Number(a.payday)), version: a.version, anchoredAt: day(Number(a.anchoredAt)) };
     } catch (e) { chain = { error: e instanceof Error ? e.message : String(e) }; }
@@ -49,20 +53,25 @@ export function Verify() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const run = async (t: string) => {
     setBusy(true); setError(null); setResult(null);
-    try { setResult(await checkBundle(text)); }
+    try { setResult(await checkBundle(t)); }
     catch (x) { setError(x instanceof Error ? x.message : String(x)); }
     finally { setBusy(false); }
   };
+  const submit = (e: React.FormEvent) => { e.preventDefault(); void run(text); };
+  const trySample = () => { setText(SAMPLE_PROOF_TEXT); void run(SAMPLE_PROOF_TEXT); };
   return (
     <div className="notes">
       <VerifyIntro />
       <form className="card pad mt" onSubmit={submit}>
         <label>Proof bundle<textarea value={text} onChange={(e) => setText(e.target.value)} placeholder='{"root":"0x…","fields":[{"leaf":{"name":"net","value":"8500.00","salt":"0x…"},"proof":["0x…"]}]}' spellCheck={false} aria-describedby="vhelp" /></label>
-        <p id="vhelp" className="fine">To get one in the demo: open the employee view, press Share a proof on a payslip, and copy it.</p>
-        <div className="btns"><button type="submit" className="cta" disabled={busy || !text.trim()}>{busy ? 'Checking…' : 'Verify'}</button>{text && <button type="button" className="ghostbtn" onClick={() => { setText(''); setResult(null); setError(null); }}>Clear</button>}</div>
+        <p id="vhelp" className="fine">To get one in the demo: open the employee view, press Share a proof on a payslip, and copy it. Or try the sample below, which was anchored on Sepolia for real.</p>
+        <div className="btns">
+          <button type="submit" className="cta" disabled={busy || !text.trim()}>{busy ? 'Checking…' : 'Verify'}</button>
+          <button type="button" className="ghostbtn" disabled={busy} onClick={trySample}>Try a proof anchored on Sepolia</button>
+          {text && <button type="button" className="ghostbtn" onClick={() => { setText(''); setResult(null); setError(null); }}>Clear</button>}
+        </div>
         {error && <p className="err" role="alert">{error}</p>}
       </form>
       {result && <ResultView r={result} />}

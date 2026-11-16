@@ -1,0 +1,46 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "runId": "sample-client-studio-2026-10",
+  "runLabel": "October 2026 payroll",
+  "payday": "2026-10-28",
+  "employer": "0xeB17b3F4ea77178Dc6ad94f026CF76D790868154",
+  "employerName": "Sample Studio Sdn Bhd",
+  "disburseTx": "0xeca6d081fe8bcf6c6a9375922281fe52dbc9373a63d8e05e67589e4c9e59b08e",
+  "anchorTx": "0x3e2a9e87357365fb8bba82957b93a0fde170df9ba1acd17b73700b43d413b6f9",
+  "anchorId": "0x9f738bbc60f88d9e8544e6923bcaa15379f8432dbba348b34c55cfb82727c339",
+  "root": "0xdf6207abc641871a79962f23ebce030a58767f223f656b4ee34642373d19f62b",
+  "docHash": "0xd10c546d9dc7f1bda5a2fc305cca0f3cb627a1ef7b56e31009b4261a32e342c6",
+  "legs": [
+    {
+      "payoutId": "sample-client-studio-2026-10-p1",
+      "stablecoin": "MYRT",
+      "to": "0x71c2A4B9e05d3F8A61b7C0d2E94F5a3b8c6d9C4E",
+      "amount": "8500.00",
+      "ok": true,
+      "reason": null
+    },
+    {
+      "payoutId": "sample-client-studio-2026-10-p3",
+      "stablecoin": "USDT",
+      "to": "0x3af09b1C7d2E4f6A8B0C1d3E5F7A9B2C4d6e8F01",
+      "amount": "428.57",
+      "ok": true,
+      "reason": null
+    }
+  ],
+  "payslipFor": {
+    "personId": "p1",
+    "personName": "Aisyah Rahman"
+  },
+  "disclosedFields": [
+    "net",
+    "currency",
+    "payday",
+    "employerName",
+    "payout.0.txHash"
+  ],
+  "explorer": "https://sepolia.etherscan.io",
+  "ranAt": 1794803162,
+  "notes": "Paid with the repository demo stablecoins (TestStablecoin faucets) from packages/chain/scripts/sepolia-sample-run.ts. The proof bundle for the verifier page is apps/web/src/data/sepolia-sample-proof.json. Undisclosed salts stay with the operator."
+}

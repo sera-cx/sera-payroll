@@ -1,0 +1,81 @@
+{
+  "root": "0xdf6207abc641871a79962f23ebce030a58767f223f656b4ee34642373d19f62b",
+  "fields": [
+    {
+      "leaf": {
+        "name": "net",
+        "value": "8500.00",
+        "salt": "0xa5785891eb0e1dad0fabeadb266b6ba283a9e93001c0b2062ce59bda7e8a98f6"
+      },
+      "proof": [
+        "0x9f4002a293eab40dca89751ac2f2fc67ad4b59991a62117b77bb9bc10652cfbb",
+        "0xd1e1892ccaa2c4a3e2dfd090dce993b14e4aaa40c229a307fc91a937dbfebca0",
+        "0xde3b1951cf51357b8a4c31fe54248fd275923e67bd4ba5c286cd32071163ff27",
+        "0xaeb08e70ea143f1b2d6ecd5984234234c4959e9049f67934383ade96f8a12da1",
+        "0x2b870f5ea90cb60dcbcb50a1ef85317add1fcac9b0623633960a01f61e45c866"
+      ]
+    },
+    {
+      "leaf": {
+        "name": "currency",
+        "value": "MYR",
+        "salt": "0x44a3a11321adadfd44e6a21e2d7a2280b8dacd81b8fac09ff62f160dc8b9a0b7"
+      },
+      "proof": [
+        "0xfa1d8f7b847932a1eb9d999b012568430a402000297fde0f9f9a9732b7c3473c",
+        "0x1f392e94a638526dae4816d14e08a7a7a804b5f3f74a13cd8dc410d7114950bd",
+        "0x953d6970f7057b5a8fc46788440939fbb6d3f68ea5faa101f46f0ea5b38c1e5e",
+        "0xaeb08e70ea143f1b2d6ecd5984234234c4959e9049f67934383ade96f8a12da1",
+        "0x2b870f5ea90cb60dcbcb50a1ef85317add1fcac9b0623633960a01f61e45c866"
+      ]
+    },
+    {
+      "leaf": {
+        "name": "payday",
+        "value": "2026-10-28",
+        "salt": "0x7b1edcd44bb5e567387b48ae70fa16ecedcb119fa2c36779a98ce1dd71025710"
+      },
+      "proof": [
+        "0x25f132275cb263ec12d6b5fe661c332a1ff6abe5c436db90b86eb9deb2e05cf9",
+        "0xdac7a4cc5c56fad450b6f38baf4fcb5380ca58b83510463136f6097fea6d6744",
+        "0xaf5615d3fbdf47df9e559ff684780e0424e2021c53a23b28e8ff59888cc18a99",
+        "0x135accc61023e8a7273db65b7891ffce26a7abceb746f942e187bc90c7ea438c",
+        "0x2b870f5ea90cb60dcbcb50a1ef85317add1fcac9b0623633960a01f61e45c866"
+      ]
+    },
+    {
+      "leaf": {
+        "name": "employerName",
+        "value": "Sample Studio Sdn Bhd",
+        "salt": "0x309c5941e04ff80816d585d0cecda63478357731d7e79df46692f80d02d1880c"
+      },
+      "proof": [
+        "0xfca6c2ca5c2d1ca8d5b1baebf1b8a10f780f7e682e15a5bc2eb69be8fffd97cc",
+        "0xdda3ee78f92d52a4a46a9819990f1ed371c28ab203e226bfd76795e5ce25da08",
+        "0x076eada7e42b7e569c91a43d1d2e62f0dbf5f68c0a3983b43001f86df855168e",
+        "0x135accc61023e8a7273db65b7891ffce26a7abceb746f942e187bc90c7ea438c",
+        "0x2b870f5ea90cb60dcbcb50a1ef85317add1fcac9b0623633960a01f61e45c866"
+      ]
+    },
+    {
+      "leaf": {
+        "name": "payout.0.txHash",
+        "value": "0xeca6d081fe8bcf6c6a9375922281fe52dbc9373a63d8e05e67589e4c9e59b08e",
+        "salt": "0x8783433719609d850d790d49501b469c6a17d825570966dfddccea228a06b083"
+      },
+      "proof": [
+        "0x8430ff91cfb04b1461feeb2d678fbb069e0be8d867046356419ec63ba068ba90",
+        "0x44f4cef3c7728940b0ed8c65f96e8c84a5a674cc30272c2cd7226d0a423c628c",
+        "0xa1b5ac219e29f5dc911188c01b64ed5b85a4b95c50c3e0002168fb2fddaa842b"
+      ]
+    }
+  ],
+  "anchorTx": "0x3e2a9e87357365fb8bba82957b93a0fde170df9ba1acd17b73700b43d413b6f9",
+  "explorerUrl": "https://sepolia.etherscan.io/tx/0x3e2a9e87357365fb8bba82957b93a0fde170df9ba1acd17b73700b43d413b6f9",
+  "chainId": 11155111,
+  "registry": "0x1E187E50cE8F4F8ec7124DCE7FD1Abf37938449D",
+  "anchorId": "0x9f738bbc60f88d9e8544e6923bcaa15379f8432dbba348b34c55cfb82727c339",
+  "runId": "sample-client-studio-2026-10",
+  "personId": "p1",
+  "payday": "2026-10-28"
+}

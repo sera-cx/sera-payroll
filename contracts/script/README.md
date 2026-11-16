@@ -37,6 +37,10 @@ PAYSLIP_REGISTRY_ADDRESS=0x...
 
 The treasury wallet must `approve(PAYROLL_DISBURSER_ADDRESS, amount)` on each stablecoin it pays with before a run is sent. The web app offers that step before signing.
 
+## Smoke test: pay a sample run
+
+`packages/chain/scripts/sepolia-sample-run.ts` mints the demo stablecoins to the deployer, approves the disburser, pays the first sample company's October 2026 run in one `disburse`, anchors one payslip and writes a disclosure bundle. Run it from the repository root with `pnpm exec tsx packages/chain/scripts/sepolia-sample-run.ts`; it reads `contracts/.env`. The public demo's record of that run is `deployments/sepolia-sample-run.json`.
+
 ## Mainnet
 
 Only `PayrollDisburser` and `PayslipRegistry` are meant for mainnet (`DEPLOY_TEST_TOKENS=false`). The script refuses to deploy `TestStablecoin` on chainId 1. Remember the licensing note in the build notes: the Sera.cx-hosted demo stays on a testnet.
