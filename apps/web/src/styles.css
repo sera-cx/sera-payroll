@@ -6,7 +6,9 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);font-size:15px;li
 button,select,input,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
 button{cursor:pointer}
 a{color:var(--deep)}
-.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.bar .seg{margin-left:auto}
+.bar>.flex{margin-left:auto;justify-content:flex-end}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800}
 .brand small{display:block;font-weight:500;font-size:12px;color:var(--mute)}
 .dot{width:30px;height:30px;border-radius:9px;background:var(--g);flex:none}
@@ -58,7 +60,7 @@ h2{margin:0 0 10px;font-size:16px;font-weight:800}
 .kv span:first-child{color:var(--mute)}
 .kv span:last-child{font-weight:600;text-align:right;overflow-wrap:anywhere}
 .big{font-weight:800;font-size:34px;letter-spacing:-.03em;line-height:1.1;overflow-wrap:anywhere}
-.cta{min-height:52px;border:2px solid var(--ink);border-radius:12px;background:var(--g);font-weight:800;font-size:16px;padding:0 16px}
+.cta{min-height:52px;border:2px solid var(--ink);border-radius:12px;background:var(--g);font-weight:800;font-size:16px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink)}
 .cta:disabled{background:#fff;color:var(--mute);border-color:var(--line);cursor:not-allowed}
 .ghostbtn{min-height:44px;border:1px solid var(--ink);border-radius:12px;background:#fff;font-weight:600;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink)}
 .ghostbtn:disabled{opacity:.5;cursor:not-allowed}

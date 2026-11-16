@@ -52,9 +52,9 @@ function DemoPicker() {
     },
   });
   return (
-    <label className="inline" style={{ fontSize: 12, flex: '1 1 240px', maxWidth: '100%' }}>
+    <label className="inline" style={{ fontSize: 12, maxWidth: '100%' }}>
       Sign in as
-      <select aria-label="Sign in as" value={me.user?.id ?? ''} onChange={(e) => login.mutate(e.target.value)} style={{ width: 'auto', minWidth: 0, flex: 1 }}>
+      <select aria-label="Sign in as" value={me.user?.id ?? ''} onChange={(e) => login.mutate(e.target.value)} style={{ width: 'auto', maxWidth: 260 }}>
         <option value="" disabled>Pick a sample user</option>
         {users.data?.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.role.replace('_', ' ')}{u.clientName ? `, ${u.clientName}` : ''})</option>)}
       </select>
