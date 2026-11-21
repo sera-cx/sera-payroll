@@ -47,7 +47,7 @@ VITE_BASE=/sera-payroll/ pnpm preview:static     # http://localhost:4173/sera-pa
 - `sitemap.xml` lists the fourteen indexable pages; the invite page is `noindex`.
 - Canonicals end with a slash to match the folders Pages serves. Pages redirects the slash-less form.
 - Open Graph image: `apps/web/public/og.png` (1200 by 630). Favicon and touch icon sit next to it.
-- Titles are `<screen> · Sera.cx Payroll demo`; the landing page is `Sera.cx Payroll: open-source stablecoin payroll`. Change `SITE_NAME` and the route table in `apps/web/src/seo.ts` when you rebrand.
+- Titles are `<screen> · Sera.cx Payroll demo`; the landing page is `Sera.cx Payroll: source-available stablecoin payroll`. Change `SITE_NAME` and the route table in `apps/web/src/seo.ts` when you rebrand.
 - After the first deploy, submit `https://<site>/sitemap.xml` in Google Search Console and Bing Webmaster Tools. Both need you to verify ownership of the GitHub Pages site (an HTML file in `apps/web/public/` works).
 
 ## 2. Contracts on Sepolia

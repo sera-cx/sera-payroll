@@ -2,7 +2,7 @@
   "name": "@sera-payroll/db",
   "version": "0.1.0",
   "description": "Database schema, migrations and sample seed for Sera.cx Payroll. Postgres through Drizzle, PGlite when no DATABASE_URL is set.",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -2,8 +2,8 @@
   "name": "sera-payroll",
   "private": true,
   "version": "0.1.0",
-  "description": "Open-source stablecoin payroll. Employers fund in any stablecoin or fiat, each person chooses what they receive. Settlement by Sera.cx.",
-  "license": "MIT",
+  "description": "Source-available stablecoin payroll. Employers fund in any stablecoin or fiat, each person chooses what they receive. Settlement by Sera.cx.",
+  "license": "SEE LICENSE IN LICENSE",
   "packageManager": "pnpm@10.4.1",
   "engines": { "node": ">=22" },
   "scripts": {

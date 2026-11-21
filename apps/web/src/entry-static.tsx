@@ -30,7 +30,7 @@ function StaticPage({ meta }: { meta: RouteMeta }) {
   return (
     <>
       <div className="bar">
-        <Link to="/" className="brand"><div className="dot" aria-hidden="true" /><span>{SITE_NAME}<small>Open-source demo</small></span></Link>
+        <Link to="/" className="brand"><div className="dot" aria-hidden="true" /><span>{SITE_NAME}<small>Source-available demo</small></span></Link>
         <nav className="seg" aria-label="Site">
           <Link to="/" aria-current={meta.path === '/' ? 'page' : undefined}>Overview</Link>
           <Link to="/employer/run" aria-current={meta.group === 'Employer' ? 'page' : undefined}>Employer</Link>
@@ -42,7 +42,7 @@ function StaticPage({ meta }: { meta: RouteMeta }) {
         </nav>
         <div className="flex"><span className="pill">Settlement by Sera.cx</span></div>
       </div>
-      <div className="note"><span><strong>DEMO SITE</strong>Sample data on the Sepolia testnet. Nothing is sent, emailed or paid for real. Open source: fork it and add your own database, emails and ramp partners. <a href={REPO}>github.com/sera-cx/sera-payroll</a></span></div>
+      <div className="note"><span><strong>DEMO SITE</strong>Sample data on the Sepolia testnet. Nothing is sent, emailed or paid for real. Free to fork: add your own database, emails and ramp partners. <a href={REPO}>github.com/sera-cx/sera-payroll</a></span></div>
       <div className="wrap"><Content meta={meta} /></div>
     </>
   );

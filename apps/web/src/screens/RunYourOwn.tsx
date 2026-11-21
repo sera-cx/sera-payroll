@@ -109,7 +109,7 @@ forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --broadcast -
           <li><a href={DOC('docs/ON_CHAIN_PAYSLIP.md')} target="_blank" rel="noreferrer">docs/ON_CHAIN_PAYSLIP.md</a>: the payslip commitment scheme behind <Link to="/verify">the verifier</Link>.</li>
           <li><a href={DOC('contracts/script/README.md')} target="_blank" rel="noreferrer">contracts/script/README.md</a>: deploying and verifying the contracts.</li>
         </ul>
-        <p className="fine">MIT licensed. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></p>
+        <p className="fine">Licensed under the <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Sera.cx Payroll Source Licence</a>: free to fork, rebrand and sell; settlement in production goes through the Sera.cx Protocol and that condition cannot be removed. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></p>
       </section>
     </article>
   );

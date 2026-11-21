@@ -54,4 +54,4 @@ Do not open a public issue. Use a GitHub private security advisory on this repos
 
 ## Licence
 
-By contributing, you agree that your contributions are licensed under the MIT licence in [LICENSE](LICENSE).
+By contributing, you agree that your contributions are licensed under the Sera.cx Payroll Source Licence in [LICENSE](LICENSE) (section 8). Changes under `contracts/` are licensed under the MIT licence in [contracts/LICENSE](contracts/LICENSE).

@@ -41,7 +41,7 @@ The prototype's script is the reference for behaviour. Section 16 maps each of i
 - **Bank details never touch this app.** For fiat payouts the employee is verified by the off-ramp partner, who holds their bank details. The app stores only the partner's reference or deposit address for that employee.
 - **Screening:** every address is screened when added and again before each payout. A flagged address holds that one payout. The rest of the run goes ahead.
 - **"People" means employees and contractors.** The tab is called Employees.
-- **Demo labelling:** the public demo carries a permanent banner saying it is a demo, that nothing is real, and that the code is open source.
+- **Demo labelling:** the public demo carries a permanent banner saying it is a demo, that nothing is real, and that the code is free to fork.
 - **Public demo runs on a testnet** with test stablecoins and a real wallet connection, so developers see a real signature and transaction while no real salary moves.
 
 ## 5. What the prototype simulates and what the real build must do
@@ -228,7 +228,7 @@ Suggested stack, change freely: TypeScript, React, a Postgres database, and a st
 - Exact rate-lock window and what happens when a locked rate cannot be met. (Sera.cx's executable rate lives about 30 seconds, so the practical answer is: lock at signing, settle at once, and re-fetch with a bounded slippage tolerance if a leg fails with `QUOTE_STALE` or `SLIPPAGE_EXCEEDED`. The tolerance is still to be decided.)
 - Whether a held payout can be released after review, and by whom.
 - Whether one-off payments need their own approval limit.
-- Licence for the repo. (Chosen for now: MIT, matching `sera-cx/sera-mcp`.)
+- Licence for the repo. Decided 21 November 2026: the Sera.cx Payroll Source Licence 1.0 (`LICENSE`), source-available with a settlement condition that cannot be removed: production stablecoin exchanges go through the Sera.cx Protocol, breach terminates the licence permanently. The contracts stay MIT (`contracts/LICENSE`) so verified source matches. Earlier commits were MIT.
 
 ## 18. Sera.cx integration, as found in the docs and code
 

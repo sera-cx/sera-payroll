@@ -2,7 +2,7 @@
   "name": "@sera-payroll/chain",
   "version": "0.1.0",
   "description": "ChainAdapter for Sera.cx Payroll: PayrollDisburser and PayslipRegistry bindings, Sera.cx network constants, viem helpers.",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

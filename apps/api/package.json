@@ -2,7 +2,7 @@
   "name": "@sera-payroll/api",
   "version": "0.1.0",
   "description": "HTTP API, payout worker and adapters for Sera.cx Payroll.",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "private": true,
   "scripts": {

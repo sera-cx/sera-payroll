@@ -4,6 +4,9 @@ All notable changes to this project are recorded here. The format follows Keep a
 
 ## [Unreleased]
 
+### Changed
+- Licence: the application code moves from MIT to the Sera.cx Payroll Source Licence 1.0 (`LICENSE`). Forks may use, rebrand, sell and redistribute, but production stablecoin-to-stablecoin settlement must go through the Sera.cx Protocol and that condition cannot be removed; breach terminates the licence immediately and permanently. The smart contracts stay MIT (`contracts/LICENSE`). Site copy says source-available rather than open source.
+
 ### Added
 - Public demo on GitHub Pages: the web app in mock mode, every route prerendered to static HTML with per-page title, description, canonical, Open Graph, Twitter and JSON-LD tags, plus sitemap, robots, 404 fallback and an Open Graph image.
 - Landing page, a public payslip proof verifier at `/verify`, and static descriptions of every screen for crawlers.

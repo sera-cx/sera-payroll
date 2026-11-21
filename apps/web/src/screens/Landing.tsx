@@ -13,7 +13,7 @@ export function Landing() {
   return (
     <div className="land">
       <section className="hero">
-        <span className="chip">Open source · MIT · Demo on the Sepolia testnet</span>
+        <span className="chip">Source available · Free to fork · Demo on the Sepolia testnet</span>
         <h1>{home.heading}</h1>
         <p>{home.description}</p>
         <div className="btns">
@@ -142,7 +142,7 @@ pnpm --filter @sera-payroll/web dev`}</pre>
       </section>
 
       <footer className="land-foot">
-        <span>{SITE_NAME} is open source under the MIT licence. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></span>
+        <span>{SITE_NAME} is free to fork under the <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Sera.cx Payroll Source Licence</a>: settlement stays on the Sera.cx Protocol. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></span>
         <span className="pill">Settlement by Sera.cx</span>
       </footer>
     </div>

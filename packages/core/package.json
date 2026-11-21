@@ -2,7 +2,7 @@
   "name": "@sera-payroll/core",
   "version": "0.1.0",
   "description": "Pay run engine, state machines, interfaces and payslip commitments for Sera.cx Payroll. Pure TypeScript, no I/O.",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

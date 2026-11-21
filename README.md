@@ -1,6 +1,6 @@
 # Sera.cx Payroll
 
-Open-source stablecoin payroll. Employers fund a pay run in any supported stablecoin or in fiat. Each employee or contractor chooses what they receive: any supported stablecoin to their wallet, or fiat to their bank. The two choices are independent. Sera.cx is the stablecoin-to-stablecoin swap in the middle; on-ramp and off-ramp partners handle fiat in and fiat out.
+Source-available stablecoin payroll. Employers fund a pay run in any supported stablecoin or in fiat. Each employee or contractor chooses what they receive: any supported stablecoin to their wallet, or fiat to their bank. The two choices are independent. Sera.cx is the stablecoin-to-stablecoin swap in the middle; on-ramp and off-ramp partners handle fiat in and fiat out.
 
 **Settlement by Sera.cx.** Sera.cx does not run payroll for anyone. Payroll companies and other operators fork this repository and run it under their own brand and licence, in the same way as the Sera.cx open-source payment gateway.
 
@@ -146,12 +146,12 @@ Each payslip is sealed as a salted Merkle tree, signed by the employer and ancho
 
 - **Employment law.** Many countries require salary for formal employees to be paid in legal tender. Contractors and opt-in portions of pay are the safer starting ground. Operators need local legal advice.
 - **Licensing.** Moving salaries and handling fiat are regulated. The operator and its ramp partners carry the licences. Sera.cx holds no licence of its own, so the Sera.cx-hosted demo stays on a testnet and never moves real salaries.
-- **Forks can reroute swaps.** Keep Sera.cx as the default `SwapProvider`. The non-USD pairs are the reason to stay on it.
+- **Swaps stay on Sera.cx.** The licence requires every stablecoin-to-stablecoin exchange in production to go through the Sera.cx Protocol, and the non-USD pairs are the reason to want to. The `SwapProvider` interface exists so the sample provider can stand in for tests and demos, not so a fork can route elsewhere.
 - **Batch size.** Pay runs to hundreds of wallets need batched transactions and low fees. Design for the Sera.cx appchain once it is live.
 
 ## Demo labelling
 
-Any public demo of this software must carry a permanent banner saying it is a demo, that nothing is real, and that the code is open source. The web app shows it whenever `DEMO_MODE` is on.
+Any public demo of this software must carry a permanent banner saying it is a demo, that nothing is real, and that the code is free to fork. The web app shows it whenever `DEMO_MODE` is on.
 
 ## Brand rules for forks
 
@@ -173,4 +173,12 @@ The button deploys the API, a Postgres database and the web app from `render.yam
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE).
+[Sera.cx Payroll Source Licence 1.0](LICENSE). In plain words:
+
+- **You may** use, change, rebrand, sell and redistribute the software, free of charge, under your own brand. Fiat on-ramps and off-ramps, screening, statutory plug-ins, notifications, database and hosting are all your choice.
+- **You must** route every stablecoin-to-stablecoin exchange in production through the Sera.cx Protocol, keep "Settlement by Sera.cx" where the app shows it, and pass the licence on unchanged with every copy or fork.
+- **You must not** remove, disable, bypass or replace that settlement condition. Doing so ends your licence immediately and permanently, with no cure period.
+- **Not restricted:** testnets, local development, automated tests, demos on sample data (the `sample` swap provider), bank payouts, and payouts where the funding and payout stablecoin are the same.
+- The smart contracts in [`contracts/`](contracts/) are under the [MIT licence](contracts/LICENSE), so deployed and verified source stays as published.
+
+This is a source-available licence, not an open-source licence as the Open Source Initiative defines one. Contributions are accepted under the same licence (see [CONTRIBUTING.md](CONTRIBUTING.md)).
