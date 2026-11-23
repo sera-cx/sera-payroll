@@ -1,0 +1,19 @@
+Sera.cx Payroll
+Licensed under the Sera.cx Payroll Source Licence, Version 1.1 (see LICENSE).
+The smart contracts under contracts/ are licensed under the MIT licence
+(see contracts/LICENSE).
+
+Licensor: Sera.cx, the operator of https://sera.cx and https://docs.sera.cx.
+  Registered legal entity name, registration number and registered office:
+  to be stated here by the Licensor before the first production deployment
+  by a third party. Until then, notices reach the Licensor through
+  https://github.com/sera-cx/sera-payroll (private security advisory or
+  issue addressed to the maintainers).
+
+Protocol Register: the page headed "Protocol Register" at https://docs.sera.cx.
+  It lists, by network and address, the smart contracts, API and appchain
+  that make up the Sera.cx Protocol for the purposes of LICENSE section 1,
+  and any exception published under LICENSE section 3.5(e).
+
+Notices to the Licensor (LICENSE section 13.5) and the records request under
+LICENSE section 3.7 use the contact stated above.

@@ -173,12 +173,13 @@ The button deploys the API, a Postgres database and the web app from `render.yam
 
 ## Licence
 
-[Sera.cx Payroll Source Licence 1.0](LICENSE). In plain words:
+[Sera.cx Payroll Source Licence 1.1](LICENSE), with the Licensor and contact in [NOTICE](NOTICE). In plain words:
 
 - **You may** use, change, rebrand, sell and redistribute the software, free of charge, under your own brand. Fiat on-ramps and off-ramps, screening, statutory plug-ins, notifications, database and hosting are all your choice.
-- **You must** route every stablecoin-to-stablecoin exchange in production through the Sera.cx Protocol, keep "Settlement by Sera.cx" where the app shows it, and pass the licence on unchanged with every copy or fork.
-- **You must not** remove, disable, bypass or replace that settlement condition. Doing so ends your licence immediately and permanently, with no cure period.
-- **Not restricted:** testnets, local development, automated tests, demos on sample data (the `sample` swap provider), bank payouts, and payouts where the funding and payout stablecoin are the same.
+- **The licence covers one form only:** a form in which every stablecoin-to-stablecoin exchange a production pay run needs goes through the Sera.cx Protocol, no code or configuration routes it elsewhere, and "Settlement by Sera.cx" stays where the app shows it. Copying, modifying, distributing or running the software in production in any other form is outside the licence.
+- **Going around it counts.** Swapping in your own treasury to fund a run, converting to fiat and back to avoid the Protocol, or having a partner do the swap for you are all breaches. Operators keep records of production settlement and provide them on request.
+- **Consequences.** Any such act infringes the Licensor's copyright and breaches the licence agreement. It ends your licence immediately and permanently, with no cure period, and the Licensor may seek an injunction, damages or an account of profits, and its legal costs. A thirty-day window lets you finish payouts already approved and funded, through the Protocol, so employees are not harmed.
+- **Not restricted:** testnets, local development, automated tests, demos on sample data (the `sample` swap provider and the provider interface itself), bank payouts, payouts where the funding and payout stablecoin are the same, and the case where a law requires a payment the Protocol cannot meet, with notice to the Licensor.
 - The smart contracts in [`contracts/`](contracts/) are under the [MIT licence](contracts/LICENSE), so deployed and verified source stays as published.
 
-This is a source-available licence, not an open-source licence as the Open Source Initiative defines one. Contributions are accepted under the same licence (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+This is a source-available licence, not an open-source licence as the Open Source Initiative defines one. Contributions are assigned to the Licensor and licensed back under the same licence (see [CONTRIBUTING.md](CONTRIBUTING.md)). Commits up to and including `5f27347` were published under MIT and remain available under it.

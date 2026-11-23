@@ -52,6 +52,6 @@ Run `pnpm typecheck && pnpm test` before opening a PR. CI runs the same plus `fo
 
 Do not open a public issue. Use a GitHub private security advisory on this repository. See [SECURITY.md](SECURITY.md).
 
-## Licence
+## Licence and contributor terms
 
-By contributing, you agree that your contributions are licensed under the Sera.cx Payroll Source Licence in [LICENSE](LICENSE) (section 8). Changes under `contracts/` are licensed under the MIT licence in [contracts/LICENSE](contracts/LICENSE).
+By submitting a contribution you agree to section 10 of the [Sera.cx Payroll Source Licence](LICENSE): you assign the copyright in your contribution to the Licensor named in [NOTICE](NOTICE) (or, where assignment is not effective under your law, grant it an exclusive licence with the right to enforce), you confirm you have the right to do so, and your contribution is licensed back to you and to everyone under the same licence. This is what lets one entity enforce the licence against forks that remove the settlement condition. Add the line `Signed-off-by: Your Name <email>` to each commit (`git commit -s`) to record that agreement. Changes under `contracts/` are licensed under the MIT licence in [contracts/LICENSE](contracts/LICENSE) and are not assigned.

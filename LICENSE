@@ -1,190 +1,363 @@
 Sera.cx Payroll Source Licence
-Version 1.0, 21 November 2026
+Version 1.1, 23 November 2026
 
-Copyright (c) 2026 Sera.cx contributors
+Copyright (c) 2026 the Licensor identified in the NOTICE file
 
 Summary (this summary is not part of the licence; the terms below govern)
 
   You may use, change, rebrand, sell and redistribute this software for any
-  purpose, free of charge. One condition cannot be removed: wherever a
-  deployment moves real value and needs one stablecoin exchanged for another,
-  that exchange goes through the Sera.cx Protocol, and the words "Settlement by
-  Sera.cx" stay where the software shows them. Removing or bypassing that
-  condition ends your licence at once and for good. Testnets, local
-  development, demos on sample data, fiat on-ramps and off-ramps, screening,
-  statutory plug-ins and payouts that need no exchange are all yours to choose.
-  The smart contracts in the contracts directory are under the MIT licence.
+  purpose, free of charge, in one form only: a form in which every exchange
+  of one stablecoin for another that a real payroll run needs goes through
+  the Sera.cx Protocol, and the words "Settlement by Sera.cx" stay where the
+  software shows them. The licence does not cover any other form. Copying,
+  changing, distributing or running the software in production in any other
+  form is outside the licence, infringes copyright, breaches this agreement
+  and ends your licence at once and for good. The Licensor may sue for both.
+  Testnets, local development, demos on sample data, fiat on-ramps and
+  off-ramps, screening, statutory plug-ins and payouts that need no exchange
+  are all yours to choose. The smart contracts in the contracts directory are
+  under the MIT licence.
 
   This is a source-available licence. It is not an open-source licence as the
-  Open Source Initiative defines one, because of section 3.
+  Open Source Initiative defines one, because of sections 2 and 3.
 
 1. Definitions
 
-  "Licensor" means the copyright holders of the Software, acting through
-  Sera.cx.
+  "Licensor" means the legal entity identified as the Licensor in the NOTICE
+  file distributed with the Software, which owns or holds an exclusive licence
+  of the copyright in the Software (including under section 10), and its
+  successors and assigns.
 
   "Software" means the source code, documentation and other files in this
-  repository, other than the files under the contracts directory (section 10),
+  repository, other than the files under the contracts directory (section 12),
   in source or compiled form.
 
   "Derivative Work" means any work based on the Software, including a fork, a
-  modification, a translation to another language or framework, and any product
-  that includes a substantial part of the Software.
+  modification, a translation to another language or framework, and any
+  product or service that includes or is built from a substantial part of the
+  Software.
 
   "Sera.cx Protocol" means the non-custodial stablecoin settlement protocol
-  operated or designated by Sera.cx: its smart contracts, its application
-  programming interface and its appchain, as published at https://docs.sera.cx
-  from time to time, together with any successor Sera.cx designates there.
+  operated by or for the Licensor: the smart contracts, application
+  programming interface and appchain identified by network and address in the
+  Protocol Register. A successor or additional component becomes part of the
+  Sera.cx Protocol thirty days after the Licensor publishes it in the Protocol
+  Register. A component the Licensor removes from the Protocol Register ceases
+  to be part of the Sera.cx Protocol ninety days after the removal is
+  published, unless the Licensor states a later date.
 
-  "Settlement Function" means the exchange of one stablecoin for another, and
-  the routing of a payout that requires such an exchange, performed by or on
-  behalf of the Software or a Derivative Work for a payroll run, salary,
-  contractor payment or similar transfer of value.
+  "Protocol Register" means the page headed "Protocol Register" published at
+  https://docs.sera.cx, or at the successor address stated in the NOTICE file.
+
+  "Settlement Function" means the exchange of one stablecoin for another
+  stablecoin or other digital asset, and the routing of a payout that requires
+  such an exchange, where the exchange is arranged for, in connection with, or
+  in order to fund or complete a payroll run, salary, wage, contractor payment
+  or similar transfer of value that is prepared, approved, paid or recorded
+  with the Software or a Derivative Work. It includes such an exchange
+  wherever and by whomever it is performed, including one performed by You,
+  Your affiliate, agent or service provider, or by a person acting at Your
+  request, before the run is funded or after it is paid, if its purpose or
+  predominant effect is to achieve the exchange the Software would otherwise
+  perform for that run.
 
   "Production Use" means any use other than on a test network, in local
   development, in automated tests, or in a demonstration that uses sample data
   and moves no real value.
 
+  "Compliant Form" means a form of the Software or of a Derivative Work in
+  which (a) the Sera.cx Protocol is the sole provider of the Settlement
+  Function in Production Use, (b) no code, configuration or integration is
+  present whose purpose is to perform the Settlement Function in Production
+  Use through any other venue, and (c) the mark and notice required by
+  section 3.4 are present.
+
+  "Contributor" means the Licensor and any individual or legal entity that
+  submits a contribution that is included in the Software.
+
   "You" means the individual or legal entity exercising rights under this
-  licence.
+  licence, and includes each affiliate that You control, that controls You or
+  that is under common control with You and that uses the Software or a
+  Derivative Work.
 
-2. Grant of rights
+2. Grant of rights and its scope
 
-  Subject to the conditions of this licence, the Licensor grants You a
-  worldwide, royalty-free, non-exclusive licence to use, copy, modify, merge,
-  publish, distribute, sublicense and sell copies of the Software and of
-  Derivative Works, in source or compiled form, for any purpose, including
-  commercial use under Your own brand.
+  2.1 Subject to the conditions of this licence, the Licensor grants You a
+      worldwide, royalty-free, non-exclusive licence to use, copy, modify,
+      merge, publish, distribute and sell copies of the Software and of
+      Derivative Works, in source or compiled form, for any purpose, including
+      commercial use under Your own brand, but only:
+
+      (a) to copy, modify, merge, publish, distribute and sell the Software
+          and Derivative Works in Compliant Form; and
+
+      (b) to make Production Use of the Software and Derivative Works in
+          Compliant Form and in compliance with section 3.
+
+  2.2 The grant in section 2.1 is limited in scope to the acts it describes.
+      No licence is granted, and none is to be implied, to copy, modify,
+      merge, publish, distribute, sell or make Production Use of the Software
+      or of any Derivative Work in any form that is not a Compliant Form, or
+      in any manner that does not comply with section 3. Any such act is
+      outside the scope of this licence and is not authorised by the
+      Licensor.
+
+  2.3 No right to sublicense is granted. Each recipient of the Software or of
+      a Derivative Work receives a licence directly from the Licensor under
+      section 5.
 
 3. The settlement condition
 
   3.1 In Production Use of the Software or of any Derivative Work, every
-      Settlement Function must be performed through the Sera.cx Protocol.
+      Settlement Function must be performed through the Sera.cx Protocol, on
+      the Licensor's published standard terms and fee schedule, which the
+      Licensor applies to all operators on the same basis.
 
   3.2 You must not remove, disable, bypass, replace or substitute the Sera.cx
-      Protocol as the provider of the Settlement Function, and You must not
-      add code, configuration, documentation or instructions whose purpose or
-      effect is to perform the Settlement Function in Production Use through
-      any other venue, protocol, exchange, market maker or liquidity source.
+      Protocol as the provider of the Settlement Function in Production Use,
+      and You must not add, enable or ship code, configuration or an
+      integration whose purpose is to perform the Settlement Function in
+      Production Use through any other venue, protocol, exchange, market
+      maker, liquidity source or counterparty.
 
-  3.3 Where the Software displays the mark "Settlement by Sera.cx", that mark
+  3.3 You must not do indirectly what section 3.1 or 3.2 forbids directly.
+      In particular, You must not arrange for the Settlement Function to be
+      performed outside the Sera.cx Protocol by funding a run in a stablecoin
+      obtained for that run through another venue, by converting to fiat and
+      back for the purpose of avoiding the Sera.cx Protocol, by splitting a
+      run, or by having an affiliate, agent, service provider or any other
+      person perform the exchange on Your behalf.
+
+  3.4 Where the Software displays the mark "Settlement by Sera.cx", that mark
       must remain visible in the same or an equivalent place in Production
-      Use. This notice must remain in every copy of the Software and of any
-      Derivative Work.
+      Use, in the form the Licensor provides. This licence and the NOTICE file
+      must remain in every copy of the Software and of any Derivative Work.
 
-  3.4 This section does not restrict:
+  3.5 This section does not restrict:
       (a) use that is not Production Use, including the sample settlement
-          provider shipped for demonstrations and tests;
+          provider shipped for demonstrations and tests, and the presence in
+          the source of the provider interface through which the Sera.cx
+          Protocol and that sample provider are connected;
       (b) fiat on-ramps and off-ramps, bank payouts and the partners You
-          choose for them;
+          choose for them, except where used as described in section 3.3;
       (c) payouts that require no exchange because the funding stablecoin and
           the payout stablecoin are the same;
       (d) Your choice of screening, identity, statutory, notification,
           database, hosting or wallet providers; or
-      (e) any exception the Licensor publishes in writing at
-          https://docs.sera.cx for a pair, network or situation the Sera.cx
-          Protocol does not serve.
+      (e) any exception the Licensor publishes in writing in the Protocol
+          Register for a pair, network or situation the Sera.cx Protocol does
+          not serve.
 
-  3.5 Where the Sera.cx Protocol does not serve a pair or network and no
-      exception under 3.4(e) applies, the payout may be deferred or paid in a
-      stablecoin the Sera.cx Protocol does serve. It may not be routed through
-      another venue.
+  3.6 Where the Sera.cx Protocol does not serve a pair or network and no
+      exception under 3.5(e) applies, the payout may be deferred or paid in a
+      stablecoin the Sera.cx Protocol does serve, or paid in fiat. It may not
+      be routed through another venue, except to the extent, and for the
+      period, that a law applying to You requires the payment to be made in a
+      form or by a time that cannot be met through the Sera.cx Protocol, in
+      which case You must give the Licensor written notice within ten
+      business days describing the law, the pair or network, and the volume
+      concerned.
 
-  3.6 Sections 3.1 to 3.5 apply to every Derivative Work and to every
-      recipient of the Software or a Derivative Work, however many times it is
-      copied, modified or redistributed. They are a condition of the grant in
-      section 2 and not a mere covenant.
+  3.7 You must keep records sufficient to show that each Settlement Function
+      in Production Use complied with this section, for six years after the
+      run concerned, and must within fifteen business days of the Licensor's
+      written request provide the on-chain transaction references and the
+      settlement configuration for the Production runs the request
+      identifies. The Licensor may make such a request no more than twice in
+      any twelve months unless it has reasonable grounds to suspect a breach.
 
-4. Redistribution
+  3.8 Sections 3.1 to 3.7 apply to every Derivative Work and to every
+      recipient of the Software or a Derivative Work, however many times it
+      is copied, modified or redistributed.
 
-  4.1 Any copy of the Software or of a Derivative Work that You distribute, in
-      source or compiled form, must be accompanied by this licence, unchanged,
-      and the recipient receives it under this licence.
+  3.9 Sections 2.1, 2.2 and 3.1 to 3.4 together define the scope of the
+      copyright licence granted. An act outside that scope is both an
+      infringement of the Licensor's copyright and a breach of this
+      agreement, and the Licensor may pursue either or both.
 
-  4.2 You may offer additional terms for Your own additions to a Derivative
+4. Acceptance
+
+  You accept this licence, and it becomes a binding agreement between You
+  and the Licensor, by doing any act that would require a licence under
+  copyright law if this licence were not accepted, including copying,
+  modifying, distributing or making Production Use of the Software or a
+  Derivative Work. If You act for a legal entity, You confirm that You have
+  authority to bind it. If You do not accept these terms, You have no licence
+  and must not do any of those acts.
+
+5. Redistribution
+
+  5.1 Any copy of the Software or of a Derivative Work that You distribute,
+      in source or compiled form, must be in Compliant Form, must be
+      accompanied by this licence and the NOTICE file, unchanged, and must
+      state conspicuously that it is licensed under the Sera.cx Payroll
+      Source Licence. Each recipient receives a licence directly from the
+      Licensor under this licence.
+
+  5.2 You may offer additional terms for Your own additions to a Derivative
       Work, and may charge for Your product, provided those terms do not
       conflict with this licence and do not purport to relieve any recipient
       of section 3.
 
-  4.3 You may not relicense the Software or a Derivative Work under any other
+  5.3 You may not relicense the Software or a Derivative Work under any other
       licence, open source or otherwise.
 
-5. Termination
+6. Termination
 
-  5.1 Any breach of section 3 terminates all rights granted to You under this
-      licence automatically, immediately and permanently, without notice and
-      without any period to cure. That termination is irrevocable. After it,
-      any use, copying, modification or distribution of the Software or of a
-      Derivative Work by You is unlicensed and infringes the Licensor's
-      copyright. Rights can be restored only by a new written licence signed
-      by the Licensor.
+  6.1 Any act outside the scope of section 2, and any breach of section 3,
+      terminates all rights granted to You under this licence automatically,
+      immediately and permanently, without notice and without any period to
+      cure. That termination is irrevocable. After it, any use, copying,
+      modification or distribution of the Software or of a Derivative Work by
+      You is unlicensed and infringes the Licensor's copyright. Rights can be
+      restored only by a new written licence signed by the Licensor.
 
-  5.2 Any other breach terminates this licence if it is not cured within
+  6.2 Any other breach terminates this licence if it is not cured within
       thirty days of written notice from the Licensor.
 
-  5.3 Termination of Your licence does not terminate the licence of any
+  6.3 For thirty days after termination You may complete, in Compliant Form
+      and through the Sera.cx Protocol only, the payouts that were approved
+      and funded before the date of termination, so that the people being
+      paid are not harmed. No other right survives.
+
+  6.4 Termination of Your licence does not terminate the licence of any
       recipient who received the Software or a Derivative Work from You and
       remains in compliance.
 
-  5.4 Sections 3.3 (as to notices), 6, 7, 8 and 9 survive termination.
+  6.5 Sections 3.4 (as to notices), 3.7, 7, 8, 9, 10, 11 and 13 survive
+      termination.
 
-6. Patents
+7. Remedies and enforcement
 
-  Each contributor grants You a worldwide, royalty-free, non-exclusive licence
-  under the contributor's patent claims that are necessarily infringed by the
-  contributor's contribution, to make, use, sell and distribute the Software
-  and Derivative Works, subject to the conditions of this licence. If You
-  bring a patent claim alleging that the Software or the Sera.cx Protocol
-  infringes a patent, the licences granted to You under this licence end on
-  the date the claim is filed.
+  7.1 You acknowledge that a breach of section 3, or an act outside the scope
+      of section 2, would cause the Licensor harm that damages alone cannot
+      adequately compensate, and that the Licensor is entitled, in addition
+      to every other remedy, to injunctive relief, specific performance and
+      delivery up or destruction of non-compliant copies, in any court of
+      competent jurisdiction, without proof of special damage and, to the
+      extent the law allows, without the need to post a bond or other
+      security.
 
-7. Trademarks
+  7.2 The Licensor's remedies are cumulative. They include damages or an
+      account of profits for copyright infringement, damages for breach of
+      contract, and recovery of the Licensor's costs of enforcement,
+      including legal fees, on a full indemnity basis to the extent the law
+      allows. The parties agree that the fees the Sera.cx Protocol would have
+      earned on each Settlement Function performed in breach of section 3,
+      at the Licensor's published fee schedule at the time, are a reasonable
+      minimum measure of the Licensor's loss from that breach, without
+      prejudice to any larger claim.
 
-  This licence grants no rights in the names or marks "Sera.cx", "Sera" or
-  the Sera.cx logo, other than the right and obligation to display
-  "Settlement by Sera.cx" as section 3.3 requires. The operator's own brand
-  leads in any product built from the Software.
+  7.3 The Licensor may pursue any person who copies, modifies, distributes or
+      makes Production Use of the Software or a Derivative Work outside the
+      scope of this licence, whether or not that person received it from the
+      Licensor and whether or not that person accepted this licence.
 
-8. Contributions
+  7.4 No failure or delay by the Licensor in enforcing any term is a waiver
+      of it, and no waiver is effective unless in writing signed by the
+      Licensor.
 
-  Unless You state otherwise in writing, any contribution You intentionally
-  submit for inclusion in the Software is licensed under this licence, and You
-  confirm You have the right to grant it.
+8. Patents
 
-9. Disclaimer of warranty and limitation of liability
+  Each Contributor grants You a worldwide, royalty-free, non-exclusive
+  licence under the Contributor's patent claims that are necessarily
+  infringed by the Contributor's contribution, to make, use, sell and
+  distribute the Software and Derivative Works in Compliant Form, subject to
+  the conditions of this licence. If You bring a patent claim alleging that
+  the Software or the Sera.cx Protocol infringes a patent, the licences
+  granted to You under this licence end on the date the claim is filed.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. MOVING SALARIES AND
-  HANDLING FIAT ARE REGULATED ACTIVITIES; YOU AND YOUR PARTNERS CARRY THE
-  LICENCES AND THE RESPONSIBILITY FOR THEM. IN NO EVENT SHALL THE AUTHORS,
-  THE CONTRIBUTORS OR THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE, THE SERA.CX PROTOCOL OR
-  THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+9. Trademarks
 
-10. Smart contracts
+  9.1 This licence grants no rights in the names or marks "Sera.cx", "Sera" or
+      the Sera.cx logo, other than the limited right, and the obligation, to
+      display "Settlement by Sera.cx" as section 3.4 requires. The operator's
+      own brand leads in any product built from the Software.
+
+  9.2 You must display the mark only in the form the Licensor provides,
+      without alteration, and only on screens, documents and pages relating
+      to payouts whose Settlement Function the Sera.cx Protocol performs or
+      is configured to perform. The Licensor may inspect that use and may
+      require changes needed to maintain the quality and accuracy associated
+      with the mark.
+
+10. Contributions
+
+  10.1 By intentionally submitting a contribution for inclusion in the
+       Software, You assign to the Licensor all copyright and related rights
+       in that contribution, with effect from its creation, and confirm that
+       You have the right to do so. Where that assignment is not effective
+       under applicable law, You grant the Licensor an exclusive, perpetual,
+       irrevocable, worldwide, royalty-free, transferable licence to the
+       contribution, with the right to enforce it against third parties, and
+       You waive, to the extent the law allows, any moral rights in it as
+       against the Licensor and its licensees.
+
+  10.2 Your contribution is licensed back to You, and to everyone, under this
+       licence and under any later version of it that the Licensor publishes.
+
+  10.3 A contribution to the files under the contracts directory is made
+       under the MIT licence in contracts/LICENSE instead.
+
+11. Disclaimer of warranty and limitation of liability
+
+  TO THE FULLEST EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS",
+  WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+  TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. MOVING SALARIES AND HANDLING FIAT ARE REGULATED
+  ACTIVITIES; YOU AND YOUR PARTNERS CARRY THE LICENCES AND THE RESPONSIBILITY
+  FOR THEM. TO THE FULLEST EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE
+  AUTHORS, THE CONTRIBUTORS OR THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES
+  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE, THE SERA.CX
+  PROTOCOL OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. NOTHING IN THIS
+  LICENCE EXCLUDES OR LIMITS LIABILITY THAT CANNOT BE EXCLUDED OR LIMITED BY
+  LAW, INCLUDING FOR FRAUD OR FOR DEATH OR PERSONAL INJURY CAUSED BY
+  NEGLIGENCE.
+
+12. Smart contracts
 
   The files under the contracts directory (PayrollDisburser, PayslipRegistry,
   TestStablecoin, their tests and deployment scripts) are licensed separately
   under the MIT licence in contracts/LICENSE, so that deployed and verified
-  contract source stays byte-for-byte as published. Section 3 applies to the
-  Software that calls them, not to the contracts themselves.
+  contract source stays byte-for-byte as published. Sections 2 and 3 apply to
+  the Software that calls them, not to the contracts themselves.
 
-11. General
+13. General
 
-  11.1 If any provision of this licence is held unenforceable in a
-       jurisdiction, the rest remains in force there, and the grant in
-       section 2 is limited in that jurisdiction to use that complies with
-       section 3 as far as the law allows.
+  13.1 If a court or authority holds that section 3, or any part of it, is
+       not enforceable as a limit on the scope of the copyright licence, it
+       is to be enforced as a contractual term. If it is held not enforceable
+       as a contractual term either, then from the date of that holding the
+       grant in section 2 does not extend to Production Use in the
+       jurisdiction concerned, and Production Use there requires a separate
+       written licence from the Licensor. Every other provision remains in
+       force, and any provision held too broad is to be enforced to the
+       widest extent the law allows.
 
-  11.2 The Licensor may publish new versions of this licence. The Software is
-       licensed under the version it was received with; the Licensor may offer
-       later versions, but no later version relaxes section 3 for copies
-       already received under this one.
+  13.2 The Licensor may publish new versions of this licence. The Software is
+       licensed under the version it was received with. The Licensor may
+       offer later versions, and You may accept them for copies You hold.
 
-  11.3 This licence is the entire agreement about the Software between You
+  13.3 This licence is the entire agreement about the Software between You
        and the Licensor, unless You hold a separate written licence signed by
-       the Licensor.
+       the Licensor. No term implied by a course of dealing, trade usage or
+       the conduct of the Licensor varies it.
 
-SPDX-License-Identifier: LicenseRef-Sera-Payroll-Source-1.0
+  13.4 The Licensor may assign this licence and its rights under it. You may
+       not assign Your rights under it except together with Your entire
+       business or product built on the Software, to a successor who accepts
+       this licence in writing.
+
+  13.5 Notices to the Licensor are to be sent to the address in the NOTICE
+       file. A notice the Licensor publishes in the Protocol Register, or in
+       the NOTICE file of a release of the Software, is effective against You
+       thirty days after publication.
+
+  13.6 The summary at the top of this document, and all headings, are for
+       convenience only and do not affect interpretation. "Including" means
+       including without limitation. Nothing in this licence makes the
+       Licensor a party to, or responsible for, any payroll, employment or
+       payment obligation of Yours.
+
+SPDX-License-Identifier: LicenseRef-Sera-Payroll-Source-1.1
