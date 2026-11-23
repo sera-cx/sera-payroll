@@ -142,7 +142,7 @@ pnpm --filter @sera-payroll/web dev`}</pre>
       </section>
 
       <footer className="land-foot">
-        <span>{SITE_NAME} is free to fork under the <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Sera.cx Payroll Source Licence</a>: settlement stays on the Sera.cx Protocol. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></span>
+        <span>{SITE_NAME} is free to fork under the <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noreferrer">Sera.cx Payroll Source Licence</a>: settlement stays on the Sera.cx Protocol, or take a commercial licence without that condition. <a href={REPO} target="_blank" rel="noreferrer">github.com/sera-cx/sera-payroll</a></span>
         <span className="pill">Settlement by Sera.cx</span>
       </footer>
     </div>

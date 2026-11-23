@@ -6,7 +6,7 @@
  */
 export const SITE_URL = ((import.meta.env.VITE_SITE_URL as string | undefined) ?? '').replace(/\/$/, '');
 export const SITE_NAME = 'Sera.cx Payroll';
-export const TAGLINE = 'Source-available stablecoin payroll. Settlement by Sera.cx.';
+export const TAGLINE = 'The source-available payroll client for the Sera.cx Protocol.';
 export const REPO = 'https://github.com/sera-cx/sera-payroll';
 
 export type DemoRole = 'preparer' | 'approver' | 'employee' | 'operator_admin';
@@ -32,7 +32,7 @@ export const ROUTES: RouteMeta[] = [
   {
     path: '/', title: 'Source-available stablecoin payroll', group: 'Start here', index: true,
     heading: 'Stablecoin payroll where each person chooses what they receive',
-    description: 'Employers fund a pay run in USDT, USDC, MYRT, XSGD or fiat. Each employee or contractor receives any supported stablecoin to their wallet, or fiat to their bank. Free to fork under the Sera.cx Payroll Source Licence; settlement by Sera.cx.',
+    description: 'Employers fund a pay run in USDT, USDC, MYRT, XSGD or fiat. Each employee or contractor receives any supported stablecoin to their wallet, or fiat to their bank. The payroll client for the Sera.cx Protocol: free to fork under the Sera.cx Payroll Source Licence, or under a paid commercial licence.',
     points: [],
   },
   {
@@ -153,7 +153,7 @@ export const FAQ: { q: string; a: string }[] = [
   { q: 'Do bank details or identity documents touch the app?', a: 'No. Off-ramp partners hold identity checks and bank details. The app only learns whether a person is verified and which currency they can receive.' },
   { q: 'What is an on-chain payslip?', a: 'Each payslip is sealed into a salted Merkle root signed by the employer and anchored in the PayslipRegistry contract next to the payout transactions. Salary data never goes on chain in the clear. An employee can prove one field, such as net pay, to a landlord or lender, who verifies it on this site or against the contract.' },
   { q: 'Are the contracts deployed?', a: 'Yes, on the Sepolia testnet: PayrollDisburser for batched payouts and PayslipRegistry for payslip anchors, plus two demo stablecoins with faucets. The addresses are on this page and in the repository, and a sample payroll run has been paid and its payslip anchored through them. Mainnet deployment is for operators, with only the two settlement contracts.' },
-  { q: 'What does the licence require?', a: 'The Sera.cx Payroll Source Licence lets you use, change, rebrand, sell and redistribute the software free of charge, in one form only: every stablecoin-to-stablecoin exchange a production pay run needs goes through the Sera.cx Protocol, nothing routes it elsewhere, and the Settlement by Sera.cx mark stays in place. Any other form is outside the licence: it infringes copyright, breaches the agreement and ends the licence immediately and permanently, and the Licensor may seek an injunction, damages and costs. Going around the condition, such as swapping in your own treasury or through a partner, counts. Testnets, local development, demos on sample data, bank payouts and payouts that need no exchange are not restricted. The smart contracts are MIT.' },
+  { q: 'What does the licence require?', a: 'The Sera.cx Payroll Source Licence lets you use, change, rebrand, sell and redistribute the software free of charge, in one form only: every stablecoin-to-stablecoin exchange a production pay run needs goes through the Sera.cx Protocol, nothing routes it elsewhere, and the Settlement by Sera.cx mark stays in place. Any other form is outside the licence: it infringes copyright, breaches the agreement and ends the licence immediately and permanently, and the Licensor may seek an injunction, damages and costs. Going around the condition, such as swapping in your own treasury or through a partner, counts. Operators who want to settle elsewhere can take a paid commercial licence without the condition instead. Testnets, local development, demos on sample data, bank payouts and payouts that need no exchange are not restricted. The smart contracts are MIT.' },
   { q: 'Can I run it myself?', a: 'Yes. Clone the repository, run pnpm install and pnpm demo, and open the web app. No database or wallet is needed for the demo. The README lists what a fork must add before paying anyone for real.' },
 ];
 

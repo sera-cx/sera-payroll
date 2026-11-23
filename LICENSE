@@ -5,18 +5,21 @@ Copyright (c) 2026 the Licensor identified in the NOTICE file
 
 Summary (this summary is not part of the licence; the terms below govern)
 
-  You may use, change, rebrand, sell and redistribute this software for any
-  purpose, free of charge, in one form only: a form in which every exchange
-  of one stablecoin for another that a real payroll run needs goes through
-  the Sera.cx Protocol, and the words "Settlement by Sera.cx" stay where the
-  software shows them. The licence does not cover any other form. Copying,
-  changing, distributing or running the software in production in any other
-  form is outside the licence, infringes copyright, breaches this agreement
-  and ends your licence at once and for good. The Licensor may sue for both.
-  Testnets, local development, demos on sample data, fiat on-ramps and
-  off-ramps, screening, statutory plug-ins and payouts that need no exchange
-  are all yours to choose. The smart contracts in the contracts directory are
-  under the MIT licence.
+  This software is the payroll client for the Sera.cx Protocol: it is built
+  around that protocol's settlement. You may use, change, rebrand, sell and
+  redistribute it for any purpose, free of charge, in one form only: a form
+  in which every exchange of one stablecoin for another that a real payroll
+  run needs goes through the Sera.cx Protocol, and the words "Settlement by
+  Sera.cx" stay where the software shows them. The free licence does not
+  cover any other form. Copying, changing, distributing or running the
+  software in production in any other form is outside the free licence,
+  infringes copyright, breaches this agreement and ends your licence at once
+  and for good. The Licensor may sue for both. If you would rather settle
+  elsewhere, a paid commercial licence without that condition is available
+  from the Licensor. Testnets, local development, demos on sample data, fiat
+  on-ramps and off-ramps, screening, statutory plug-ins, payouts that need no
+  exchange, and anything you do in other software are all yours to choose.
+  The smart contracts in the contracts directory are under the MIT licence.
 
   This is a source-available licence. It is not an open-source licence as the
   Open Source Initiative defines one, because of sections 2 and 3.
@@ -106,6 +109,16 @@ Summary (this summary is not part of the licence; the terms below govern)
       a Derivative Work receives a licence directly from the Licensor under
       section 5.
 
+  2.4 Commercial licence. The condition in section 3 is the consideration
+      for this licence being free of charge. Production Use of the Software
+      or of a Derivative Work without that condition is available under a
+      separate paid commercial licence from the Licensor, on the terms the
+      Licensor publishes in the Protocol Register or agrees in writing, and
+      the Licensor offers such a licence on reasonable and non-discriminatory
+      terms to any operator who asks through the contact in the NOTICE file.
+      Nothing in this licence obliges You to take the free licence rather than
+      the commercial one.
+
 3. The settlement condition
 
   3.1 In Production Use of the Software or of any Derivative Work, every
@@ -146,7 +159,11 @@ Summary (this summary is not part of the licence; the terms below govern)
           database, hosting or wallet providers; or
       (e) any exception the Licensor publishes in writing in the Protocol
           Register for a pair, network or situation the Sera.cx Protocol does
-          not serve.
+          not serve; or
+      (f) Your use of any venue, protocol, exchange or liquidity source in
+          any software, service or business that is not the Software or a
+          Derivative Work. This licence restricts how this Software settles,
+          not whom You may trade with elsewhere.
 
   3.6 Where the Sera.cx Protocol does not serve a pair or network and no
       exception under 3.5(e) applies, the payout may be deferred or paid in a
