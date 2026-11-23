@@ -20,20 +20,19 @@
     "@fastify/cors": "^10.0.1",
     "@sera-payroll/core": "workspace:*",
     "@sera-payroll/db": "workspace:*",
-    "drizzle-orm": "^0.38.4",
+    "drizzle-orm": "^0.45.2",
     "fastify": "^5.1.0",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^10.1.4",
     "pdfkit": "^0.15.1",
     "viem": "^2.21.54",
-    "zod": "^3.23.8",
+    "zod": "^4.6.6",
     "@sera-payroll/chain": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
-    "@types/nodemailer": "^6.4.17",
     "@types/pdfkit": "^0.13.8",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.12"
   }
 }

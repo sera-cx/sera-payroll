@@ -5,7 +5,7 @@
  * content before the app boots and takes over the root element.
  */
 import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
+import { StaticRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { REPO, SITE_NAME, metaFor, type RouteMeta } from './seo';
 import { Landing } from './screens/Landing';

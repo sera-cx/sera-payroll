@@ -14,7 +14,7 @@ export function renderApp(ui: ReactNode, { route = '/', user }: { route?: string
   return render(
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={[route]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <MemoryRouter initialEntries={[route]}>
           <ToastProvider>
             <SessionProvider fallback={<p>loading session</p>}>{ui}</SessionProvider>
           </ToastProvider>
